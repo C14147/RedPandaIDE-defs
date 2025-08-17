@@ -190,6 +190,10 @@ public:
 
     SearchDialog *searchDialog() const;
 
+    // Return current UI language code (e.g. "en_US", "zh_CN"). Plugins may call
+    // this via the MainWindow pointer passed to IRedPandaPlugin::initialize().
+    QString uiLanguage() const;
+
     SearchResultModel* searchResultModel();
 
     CodeCompletionPopup *completionPopup() const;
