@@ -39,12 +39,16 @@ public:
     // list plugin file paths found in folder
     QStringList availablePlugins(const QString &folder) const;
 
+    // get metadata parsed from plugin json file for a loaded plugin
+    QVariantMap pluginMetadata(const QString &path) const;
+
 signals:
     void pluginLoaded(IRedPandaPlugin* plugin, const QString &path);
     void pluginUnloaded(IRedPandaPlugin* plugin, const QString &path);
 
 private:
     MainWindow *mMainWindow;
+    QVariantMap metadata; // parsed from plugin_name.json if present
     struct PluginRecord {
         QString path;
         QPluginLoader *loader{nullptr};
