@@ -49,7 +49,7 @@ jobs:
       run: |
         rm -rf repo-a
         # set orgin url
-        git remote set-url origin "https://github.com/C14147/RedPandaIDE-def.git"
+        git remote set-url origin "https://github.com/C14147/RedPandaIDE-defs.git"
         git add ./
         git commit -m "Update defines"
         git push origin main
