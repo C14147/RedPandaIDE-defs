@@ -28,7 +28,7 @@ jobs:
         
     - name: Run header extraction script
       run: |
-        python defs_gen.py ./repo-a ./extracted_headers -o
+        python defs_gen.py ./repo-a ./ -o
         
     - name: Configure Git
       run: |
@@ -47,6 +47,9 @@ jobs:
     - name: Commit and push changes
       if: steps.check_changes.outputs.changes == 'true'
       run: |
-        git add extracted_headers/
-        git commit -m "Update extracted headers"
+        rm -rf repo-a
+        # set orgin url
+        git remote set-url origin "https://github.com/C14147/RedPandaIDE-def.git"
+        git add ./
+        git commit -m "Update defines"
         git push origin main
