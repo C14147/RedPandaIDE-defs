@@ -28,7 +28,7 @@ jobs:
         
     - name: Run header extraction script
       run: |
-        python defs-gen.py ./repo-a ./extracted_headers -o
+        python defs_gen.py ./repo-a ./extracted_headers -o
         
     - name: Configure Git
       run: |
