@@ -9,6 +9,7 @@
 #include <QPoint>
 
 namespace RedPandaIDE {
+namespace api{
 
 /**
  * ApiCore
@@ -158,6 +159,7 @@ public slots:
     virtual void onLoadLastOpens() = 0;
 };
 
+} // namespace api
 } // namespace RedPandaIDE
 
 #endif // REDPANADA_APICORE_H
