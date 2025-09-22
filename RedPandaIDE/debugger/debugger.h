@@ -298,7 +298,7 @@ public:
                      bool inferiorHasBreakpoints, const QStringList& binDirs,
                      const QString& sourceFile = QString());
     void runInferior();
-    bool commandRunning();
+    bool commandRunning() const;
     bool inferiorRunning();
     void interrupt();
     void stepOver();
@@ -435,7 +435,7 @@ private:
     qint64 mProjectLastLoadtime;
     QString mCurrentSourceFile;
     bool mInferiorHasBreakpoints;
-    QRecursiveMutex mClientMutex;
+    mutable QRecursiveMutex mClientMutex;
 };
 
 class DebugTarget : public QThread
@@ -475,7 +475,7 @@ class DebuggerClient : public QThread
 public:
     explicit DebuggerClient(Debugger* debugger, QObject* parent = nullptr);
     virtual void stopDebug() = 0;
-    virtual bool commandRunning() = 0;
+    virtual bool commandRunning() const = 0;
     QString debuggerPath() const;
     void setDebuggerPath(const QString& debuggerPath);
     void waitStart();
@@ -582,7 +582,7 @@ signals:
     void varsValueUpdated();
 
 protected:
-    QRecursiveMutex mCmdQueueMutex;
+    mutable QRecursiveMutex mCmdQueueMutex;
 
     bool mCmdRunning;
 

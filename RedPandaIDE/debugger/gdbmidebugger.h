@@ -51,8 +51,8 @@ public:
 
     void stopDebug() override;
     DebuggerType clientType() override;
-    const PGDBMICommand& currentCmd() const;
-    bool commandRunning() override;
+    const PGDBMICommand &currentCmd() const;
+    bool commandRunning() const override;
 
     void initialize(const QString& inferior, bool hasSymbols) override;
     void runInferior(bool hasBreakpoints) override;

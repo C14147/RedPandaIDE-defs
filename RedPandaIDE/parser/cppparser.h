@@ -150,9 +150,8 @@ public:
 
     QList<QString> namespaces();
 
-    static bool isIdentifier(const QString& token)
-    {
-        return (!token.isEmpty() && isIdentChar(token.front()));
+    static bool isIdentifier(const QString& token){
+        return (!token.isEmpty() && isIdentifierChar(token.front()));
         // return (!token.isEmpty() && isIdentChar(token.front())
         //         && !token.contains("\""));
     }
@@ -366,7 +365,7 @@ private:
         case '\'':
             return false;
         default:
-            return isIdentChar(term[0]);
+            return isIdentifierChar(term[0]);
         }
     }
 
@@ -482,19 +481,20 @@ private:
         return ch == ' ' || ch == '\t';
     }
 
-    static constexpr bool isWordChar(const QChar& ch)
-    {
-        return ch.isLetter() || ch == '_' || ch == '*' || ch == '&';
+    static constexpr  bool isIdentifierOrPointerOrReferenceStart(const QChar& ch){
+        return ch.isLetter()
+                || ch == '_'
+                || ch == '*'
+                || ch == '&';
+    }    
+
+    static constexpr  bool isIdentifierChar(const QChar& ch){
+        return ch.isLetter()
+                || ch == '_';
     }
 
-    static constexpr bool isIdentifier(const QChar& ch)
-    {
-        return ch.isLetter() || ch == '_' || ch == '~';
-    }
-
-    static constexpr bool isIdentChar(const QChar& ch)
-    {
-        return ch.isLetter() || ch == '_';
+    static constexpr bool isDigit(const QChar& ch){
+        return (ch>='0' && ch<='9');
     }
 
     static constexpr bool isDigitChar(const QChar& ch)
