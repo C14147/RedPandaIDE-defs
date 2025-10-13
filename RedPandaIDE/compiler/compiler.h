@@ -23,30 +23,133 @@
 #include "../parser/cppparser.h"
 
 class Project;
+
+/**
+ * @brief Handles the compilation process for source files
+ * 
+ * The Compiler class manages the compilation of individual source files or
+ * entire projects. It runs in a separate thread to prevent blocking the UI
+ * and provides real-time feedback on the compilation process.
+ * 
+ * Key features:
+ * - Supports both full compilation and syntax checking only
+ * - Emits signals for various compilation events
+ * - Handles compilation errors and issues
+ * - Integrates with the project system for project-wide compilation
+ */
 class Compiler : public QThread
 {
     Q_OBJECT
 public:
-    enum class TargetType { Invalid, cttNone, File, Project, StdIn };
+    /**
+     * @brief Types of compilation targets
+     * 
+     * Defines what is being compiled - a single file, a project, or standard input.
+     */
+    enum class TargetType { 
+        Invalid,      //!< Invalid target
+        cttNone,      //!< No target
+        File,         //!< Single file target
+        Project,      //!< Project target
+        StdIn         //!< Standard input target
+    };
+    
+    /**
+     * @brief Construct a new Compiler object for a specific file
+     * 
+     * @param filename Path to the file to compile
+     * @param onlyCheckSyntax If true, only perform syntax checking without generating output
+     */
     Compiler(const QString& filename, bool onlyCheckSyntax);
+    
+    /**
+     * @brief Copy constructor (deleted)
+     * 
+     * Prevent copying of Compiler objects to avoid resource conflicts.
+     */
     Compiler(const Compiler&) = delete;
+    
+    /**
+     * @brief Assignment operator (deleted)
+     * 
+     * Prevent assignment of Compiler objects to avoid resource conflicts.
+     */
     Compiler& operator=(const Compiler&) = delete;
 
+    /**
+     * @brief Check if this is a rebuild operation
+     * 
+     * @return true If this is a rebuild (clean and recompile)
+     * @return false If this is an incremental compilation
+     */
     bool isRebuild() const;
+    
+    /**
+     * @brief Set whether this should be a rebuild operation
+     * 
+     * @param isRebuild True for rebuild, false for incremental compilation
+     */
     void setRebuild(bool isRebuild);
 
+    /**
+     * @brief Get the project associated with this compilation
+     * 
+     * @return const std::shared_ptr<Project>& Shared pointer to the project
+     */
     const std::shared_ptr<Project>& project() const;
+    
+    /**
+     * @brief Set the project for this compilation
+     * 
+     * @param newProject Shared pointer to the project
+     */
     void setProject(const std::shared_ptr<Project>& newProject);
 
+    /**
+     * @brief Get the parser used by this compiler
+     * 
+     * @return PCppParser Shared pointer to the C++ parser
+     */
     PCppParser parser() const;
 
 signals:
+    /**
+     * @brief Signal emitted when compilation starts
+     */
     void compileStarted();
+    
+    /**
+     * @brief Signal emitted when compilation finishes successfully
+     * 
+     * @param filename Name of the file that was compiled
+     */
     void compileFinished(const QString& filename);
+    
+    /**
+     * @brief Signal emitted when compilation produces output
+     * 
+     * @param msg Compilation output message
+     */
     void compileOutput(const QString& msg);
+    
+    /**
+     * @brief Signal emitted when a compilation issue is found
+     * 
+     * @param issue Details of the compilation issue
+     */
     void compileIssue(PCompileIssue issue);
+    
+    /**
+     * @brief Signal emitted when a compilation error occurs
+     * 
+     * @param reason Description of the error
+     */
     void compileErrorOccured(const QString& reason);
+    
 public slots:
+    /**
+     * @brief Slot to stop the compilation process
+     */
     void stopCompile();
 
 protected:

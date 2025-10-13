@@ -42,6 +42,7 @@
 #define SETTING_UI "UI"
 #define SETTING_VCS "VCS"
 #define SETTING_LANGUAGES "Languages"
+#define SETTING_COMPILE "Compile"
 #define SETTING_CODE_COMPLETION "CodeCompletion"
 #define SETTING_CODE_FORMATTER "CodeFormatter"
 #define SETTING_COMPILTER_SETS "CompilerSets"
@@ -54,65 +55,310 @@
 
 extern const char ValueToChar[28];
 
-class Settings;
-
+/**
+ * @brief Manages application settings and preferences
+ * 
+ * The Settings class provides a centralized interface for managing all application
+ * settings and preferences. It handles loading, saving, and accessing configuration
+ * data using QSettings as the backend storage.
+ * 
+ * Settings are organized into logical groups:
+ * - Dirs: Directory paths
+ * - Editor: Editor preferences
+ * - Environment: Environment settings
+ * - Executor: Program execution settings
+ * - Debugger: Debugging preferences
+ * - History: Recently used files and projects
+ * - UI: User interface preferences
+ * - VCS: Version control system settings
+ * - Languages: Language-specific settings
+ * - Compile: Compilation preferences
+ * - CodeCompletion: Code completion settings
+ * - CodeFormatter: Code formatting preferences
+ * - CompilerSets: Compiler configuration sets
+ */
 class Settings
 {
 private:
+    /**
+     * @brief Base class for settings groups
+     * 
+     * Provides common functionality for all settings groups including
+     * loading, saving, and accessing individual settings values.
+     */
     class _Base
     {
     public:
+        /**
+         * @brief Construct a new _Base object
+         * 
+         * @param settings Pointer to the parent Settings object
+         * @param groupName Name of the settings group
+         */
         explicit _Base(Settings* settings, const QString& groupName);
+        
+        /**
+         * @brief Begin the settings group
+         * 
+         * Informs QSettings to direct operations to this group.
+         */
         void beginGroup();
+        
+        /**
+         * @brief End the settings group
+         * 
+         * Informs QSettings to stop directing operations to this group.
+         */
         void endGroup();
+        
+        /**
+         * @brief Remove a key from settings
+         * 
+         * @param key Name of the key to remove
+         */
         void remove(const QString& key);
+        
+        /**
+         * @brief Save a value to settings
+         * 
+         * @param key Name of the setting
+         * @param value Value to save
+         */
         void saveValue(const QString& key, const QVariant& value);
+        
+        /**
+         * @brief Save a string set to settings
+         * 
+         * @param key Name of the setting
+         * @param set Set of strings to save
+         */
         void saveValue(const QString& key, const QSet<QString>& set);
+        
+        /**
+         * @brief Get a value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return QVariant Value of the setting
+         */
         QVariant value(const QString& key, const QVariant& defaultValue);
+        
+        /**
+         * @brief Get a boolean value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return bool Value of the setting
+         */
         bool boolValue(const QString& key, bool defaultValue);
+        
+        /**
+         * @brief Get a size value from settings
+         * 
+         * @param key Name of the setting
+         * @param size Default size if setting not found
+         * @return QSize Value of the setting
+         */
         QSize sizeValue(const QString& key, const QSize& size = QSize());
+        
+        /**
+         * @brief Get an integer value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return int Value of the setting
+         */
         int intValue(const QString& key, int defaultValue);
+        
+        /**
+         * @brief Get a double value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return double Value of the setting
+         */
         double doubleValue(const QString& key, double defaultValue);
+        
+        /**
+         * @brief Get an unsigned integer value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return unsigned int Value of the setting
+         */
         unsigned int uintValue(const QString& key, unsigned int defaultValue);
+        
+        /**
+         * @brief Get a string list value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return QStringList Value of the setting
+         */
         QStringList stringListValue(const QString& key,
                                     const QStringList& defaultValue = QStringList());
+        
+        /**
+         * @brief Get a string set value from settings
+         * 
+         * @param key Name of the setting
+         * @return QSet<QString> Value of the setting
+         */
         QSet<QString> stringSetValue(const QString& key);
+        
+        /**
+         * @brief Get a color value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return QColor Value of the setting
+         */
         QColor colorValue(const QString& key, const QColor& defaultValue);
+        
+        /**
+         * @brief Get a string value from settings
+         * 
+         * @param key Name of the setting
+         * @param defaultValue Default value if setting not found
+         * @return QString Value of the setting
+         */
         QString stringValue(const QString& key, const QString& defaultValue);
+        
+        /**
+         * @brief Save all values in the group
+         */
         void save();
+        
+        /**
+         * @brief Load all values in the group
+         */
         void load();
 
     protected:
+        /**
+         * @brief Save group-specific values
+         * 
+         * Pure virtual function implemented by subclasses to save their specific settings.
+         */
         virtual void doSave() = 0;
+        
+        /**
+         * @brief Load group-specific values
+         * 
+         * Pure virtual function implemented by subclasses to load their specific settings.
+         */
         virtual void doLoad() = 0;
 
     protected:
-        Settings* mSettings;
-        QString mGroup;
+        Settings* mSettings;  //!< Parent Settings object
+        QString mGroup;       //!< Name of this settings group
     };
 
 public:
+    /**
+     * @brief Manages directory-related settings
+     * 
+     * Handles configuration of important directory paths used by the application
+     * such as installation directory, template directory, etc.
+     */
     class Dirs : public _Base
     {
     public:
-        enum class DataType { None, ColorScheme, IconSet, Theme, Template };
+        /**
+         * @brief Types of data directories
+         * 
+         * Defines the different types of data that can be stored in directories.
+         */
+        enum class DataType { 
+            None,        //!< No specific data type
+            ColorScheme, //!< Color scheme files
+            IconSet,     //!< Icon set files
+            Theme,       //!< Theme files
+            Template     //!< Template files
+        };
+        
+        /**
+         * @brief Construct a new Dirs object
+         * 
+         * @param settings Pointer to parent Settings object
+         */
         explicit Dirs(Settings* settings);
+        
+        /**
+         * @brief Get the application directory
+         * 
+         * @return QString Path to the application directory
+         */
         QString appDir() const;
+        
+        /**
+         * @brief Get the application resource directory
+         * 
+         * @return QString Path to the application resource directory
+         */
         QString appResourceDir() const;
+        
+        /**
+         * @brief Get the application libexec directory
+         * 
+         * @return QString Path to the application libexec directory
+         */
         QString appLibexecDir() const;
+        
+        /**
+         * @brief Get the project directory
+         * 
+         * @return QString Path to the project directory
+         */
         QString projectDir() const;
+        
+        /**
+         * @brief Get the data directory for a specific data type
+         * 
+         * @param dataType Type of data
+         * @return QString Path to the data directory
+         */
         QString data(DataType dataType = DataType::None) const;
+        
+        /**
+         * @brief Get the configuration directory for a specific data type
+         * 
+         * @param dataType Type of data
+         * @return QString Path to the configuration directory
+         */
         QString config(DataType dataType = DataType::None) const;
+        
+        /**
+         * @brief Get the executable directory
+         * 
+         * @return QString Path to the executable directory
+         */
         QString executable() const;
 
+        /**
+         * @brief Set the project directory
+         * 
+         * @param newProjectDir New project directory path
+         */
         void setProjectDir(const QString& newProjectDir);
 
     protected:
+        /**
+         * @brief Save Dirs-specific values
+         * 
+         * Implements the doSave function for Dirs.
+         */
         void doSave() override;
+        
+        /**
+         * @brief Load Dirs-specific values
+         * 
+         * Implements the doLoad function for Dirs.
+         */
         void doLoad() override;
 
     private:
-        QString mProjectDir;
+        QString mProjectDir;  //!< Project directory path
     };
 
     class Editor : public _Base
@@ -628,6 +874,7 @@ public:
         QString mTerminalPath;
         QString mAStylePath;
         QString mTerminalArgumentsPattern;
+
         bool mUseCustomTerminal;
         bool mHideNonSupportFilesInFileView;
         bool mOpenFilesInSingleInstance;
@@ -639,8 +886,30 @@ public:
         void doLoad() override;
     };
 
-    class CodeCompletion : public _Base
-    {
+    class Compile: public _Base {
+    public:
+        explicit Compile(Settings *settings);
+        const QString &NASMPath() const;
+        void setNASMPath(const QString &newNASMPath);
+        bool NASMLinkCStandardLib() const;
+        void setNASMLinkCStandardLib(bool newLinkCStandardLib);
+
+        bool GASLinkCStandardLib() const;
+        void setGASLinkCStandardLib(bool newGASLinkCStandardLib);
+
+    private:
+        QString mNASMPath;
+        bool mNASMLinkCStandardLib;
+        bool mGASLinkCStandardLib;
+        // _Base interface
+    protected:
+        void doSave() override;
+        void doLoad() override;
+
+    };
+
+
+    class CodeCompletion: public _Base {
     public:
         explicit CodeCompletion(Settings* settings);
         int widthInColumns() const;
@@ -1660,9 +1929,10 @@ public:
     Environment& environment();
     Executor& executor();
     Debugger& debugger();
-    CodeCompletion& codeCompletion();
-    CodeFormatter& codeFormatter();
-    UI& ui();
+    CodeCompletion &codeCompletion();
+    CodeFormatter &codeFormatter();
+    Compile &compile();
+    UI &ui();
 #ifdef ENABLE_VCS
     VCS& vcs();
 #endif
@@ -1680,6 +1950,7 @@ private:
     Debugger mDebugger;
     CodeCompletion mCodeCompletion;
     CodeFormatter mCodeFormatter;
+    Compile mCompile;
     UI mUI;
 #ifdef ENABLE_VCS
     VCS mVCS;

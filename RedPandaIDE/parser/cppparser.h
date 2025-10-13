@@ -27,27 +27,86 @@
 
 class CppParser;
 using PCppParser = std::shared_ptr<CppParser>;
+
+/**
+ * @brief C++ code parser for syntax analysis and code completion
+ * 
+ * The CppParser class analyzes C++ source code to extract semantic information
+ * such as class definitions, function declarations, variable declarations, etc.
+ * This information is used for code completion, navigation, and other IDE features.
+ * 
+ * Key features:
+ * - Parses C++ source files to extract declarations and definitions
+ * - Handles preprocessor directives
+ * - Manages symbol database for code completion
+ * - Supports incremental parsing for better performance
+ * - Thread-safe design to allow background parsing
+ * 
+ * The parser works in conjunction with the tokenizer and preprocessor to
+ * fully analyze C++ source code and build a semantic model of the codebase.
+ */
 class CppParser : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * @brief Command to parse a file
+     * 
+     * Contains all the information needed to parse a specific file.
+     */
     struct ParseFileCommand {
-        QString fileName;
-        bool inProject;
-        QString contextFilename;
-        bool onlyIfNotParsed;
-        bool updateView;
+        QString fileName;           //!< Path to the file to parse
+        bool inProject;             //!< Whether the file is part of a project
+        QString contextFilename;    //!< Context filename for dependency tracking
+        bool onlyIfNotParsed;       //!< Only parse if not already parsed
+        bool updateView;            //!< Whether to update the view after parsing
     };
     using PParseFileCommand = std::unique_ptr<ParseFileCommand>;
 
+    /**
+     * @brief Construct a new CppParser object
+     */
     explicit CppParser();
+    
+    /**
+     * @brief Copy constructor (deleted)
+     * 
+     * Prevent copying of CppParser objects.
+     */
     CppParser(const CppParser&) = delete;
+    
+    /**
+     * @brief Assignment operator (deleted)
+     * 
+     * Prevent assignment of CppParser objects.
+     */
     CppParser& operator=(const CppParser&) = delete;
 
+    /**
+     * @brief Destroy the CppParser object
+     */
     ~CppParser();
 
+    /**
+     * @brief Add a hard define (preprocessor definition) by line
+     * 
+     * @param line Definition line (e.g., "DEBUG=1")
+     */
     void addHardDefineByLine(const QString& line);
+    
+    /**
+     * @brief Add a project file to the parser
+     * 
+     * @param fileName Path to the file
+     * @param needScan Whether the file needs to be scanned
+     */
     void addProjectFile(const QString& fileName, bool needScan);
+    
+    /**
+     * @brief Add an include path for header file resolution
+     * 
+     * @param value Path to add to include directories
+     */
     void addIncludePath(const QString& value);
     void removeProjectFile(const QString& value);
     void addProjectIncludePath(const QString& value);

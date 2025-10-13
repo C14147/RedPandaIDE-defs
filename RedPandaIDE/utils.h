@@ -45,14 +45,14 @@ using PSimpleIni = std::shared_ptr<SimpleIni>;
 
 enum class FileType {
     None,
-    ATTASM,                // AT&T assembler source file (.s)
-    INTELASM,              // Intel assembler source file (.s)
-    LUA,                   // lua file (.lua)
-    CSource,               // c source file (.c)
-    CppSource,             // c++ source file (.cpp)
-    CCppHeader,            // c header (.h)
-    PreprocessedSource,    //(.p)
-    GIMPLE,                // gcc gimple file (.gimple)
+    ATTASM, // AT&T Style GNU assembler source file (.s)
+    INTELASM, // Intel Style GNU assembler source file (.s)
+    LUA, // lua file (.lua)
+    CSource, // c source file (.c)
+    CppSource, // c++ source file (.cpp)
+    CCppHeader, // c header (.h)
+    PreprocessedSource, //(.p)
+    GIMPLE, // gcc gimple file (.gimple)
     WindowsResourceSource, // resource source (.res)
     Project,               // RedPandaIDE Project (.dev)
     Text,                  // text file
@@ -61,6 +61,7 @@ enum class FileType {
     ModuleDef, // Windows Module Definition
     MakeFile,
     Other, // any others
+    NASM, // NASM Files
 };
 
 enum class SearchFileScope { currentFile, wholeProject, openedFiles, Folder };

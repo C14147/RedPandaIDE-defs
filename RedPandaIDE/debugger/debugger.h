@@ -33,26 +33,65 @@
 #include <memory>
 #include "gdbmiresultparser.h"
 
-enum class DebugCommandSource { Console, HeartBeat, Other };
+/**
+ * @brief Source of debug commands
+ * 
+ * Indicates where a debug command originated from to handle responses appropriately.
+ */
+enum class DebugCommandSource { 
+    Console,           //!< Command from debug console
+    HeartBeat,         //!< Command from debugger heartbeat mechanism
+    Other              //!< Command from other sources
+};
 
-enum class DebuggerType { GDB, LLDB_MI, DAP };
+/**
+ * @brief Types of supported debuggers
+ * 
+ * Defines the different debugger implementations that can be used.
+ */
+enum class DebuggerType { 
+    GDB,               //!< GNU Debugger
+    LLDB_MI,           //!< LLDB with MI interface
+    DAP                //!< Debug Adapter Protocol
+};
 
+/**
+ * @brief Represents a watched variable in the debugger
+ * 
+ * Holds information about a variable being watched during a debugging session,
+ * including its value, type, and child variables (for complex types).
+ */
 struct WatchVar;
 using PWatchVar = std::shared_ptr<WatchVar>;
 struct WatchVar {
-    QString name;
-    QString expression;
-    bool hasMore;
-    QString value;
-    QString type;
-    int numChild;
-    QList<PWatchVar> children;
-    std::weak_ptr<WatchVar> parent; // use raw point to prevent circular-reference
-    qint64 timestamp;
+    QString name;                    //!< Internal name of the variable
+    QString expression;              //!< Expression used to evaluate the variable
+    bool hasMore;                    //!< Whether there are more elements (for arrays)
+    QString value;                   //!< Current value of the variable
+    QString type;                    //!< Type of the variable
+    int numChild;                    //!< Number of child variables
+    QList<PWatchVar> children;       //!< Child variables (for structs, arrays, etc.)
+    std::weak_ptr<WatchVar> parent;  //!< Parent variable (for tree structure)
+    qint64 timestamp;                //!< Timestamp of last update
 };
 
-enum class BreakpointType { Breakpoint, Watchpoint, ReadWatchpoint, WriteWatchpoint };
+/**
+ * @brief Types of breakpoints
+ * 
+ * Defines the different types of breakpoints that can be set.
+ */
+enum class BreakpointType { 
+    Breakpoint,        //!< Standard breakpoint
+    Watchpoint,        //!< Watchpoint (breaks on variable access)
+    ReadWatchpoint,    //!< Breaks on variable read
+    WriteWatchpoint    //!< Breaks on variable write
+};
 
+/**
+ * @brief Represents a breakpoint in the debugger
+ * 
+ * Holds information about a breakpoint, including its location and condition.
+ */
 struct Breakpoint {
     int number;   // breakpoint number
     QString type; // type of the breakpoint
@@ -67,6 +106,11 @@ struct Breakpoint {
 
 using PBreakpoint = std::shared_ptr<Breakpoint>;
 
+/**
+ * @brief Configuration for debugging session
+ * 
+ * Holds the current state of breakpoints and watched variables.
+ */
 struct DebugConfig {
     QList<PBreakpoint> breakpoints;
     QList<PWatchVar> watchVars;
@@ -75,6 +119,11 @@ struct DebugConfig {
 
 using PDebugConfig = std::shared_ptr<DebugConfig>;
 
+/**
+ * @brief Represents a stack trace entry
+ * 
+ * Holds information about a single frame in the call stack.
+ */
 struct Trace {
     QString funcname;
     QString filename;
@@ -85,6 +134,11 @@ struct Trace {
 
 using PTrace = std::shared_ptr<Trace>;
 
+/**
+ * @brief Model for displaying register values
+ * 
+ * Provides data for a table view showing the values of CPU registers.
+ */
 class RegisterModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -107,6 +161,11 @@ private:
 
 class Debugger;
 
+/**
+ * @brief Model for displaying breakpoints
+ * 
+ * Provides data for a table view showing the list of breakpoints.
+ */
 class BreakpointModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -152,6 +211,11 @@ private:
     friend class Debugger;
 };
 
+/**
+ * @brief Model for displaying backtrace (call stack)
+ * 
+ * Provides data for a table view showing the call stack.
+ */
 class BacktraceModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -172,6 +236,11 @@ private:
     QList<PTrace> mList;
 };
 
+/**
+ * @brief Model for displaying watched variables
+ * 
+ * Provides data for a tree view showing the watched variables.
+ */
 class WatchModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -244,6 +313,11 @@ public:
     friend class Debugger;
 };
 
+/**
+ * @brief Represents a line of memory data
+ * 
+ * Holds a block of memory data and information about which bytes have changed.
+ */
 struct MemoryLine {
     uintptr_t startAddress;
     QList<unsigned char> datas;
@@ -252,6 +326,11 @@ struct MemoryLine {
 
 using PMemoryLine = std::shared_ptr<MemoryLine>;
 
+/**
+ * @brief Model for displaying memory data
+ * 
+ * Provides data for a table view showing memory contents.
+ */
 class MemoryModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -285,6 +364,12 @@ class Editor;
 
 using PDebugReader = std::shared_ptr<DebuggerClient>;
 
+/**
+ * @brief Main debugger class
+ * 
+ * Manages the debugging session, including communication with the debugger client,
+ * handling commands, and updating models.
+ */
 class Debugger : public QObject
 {
     Q_OBJECT
@@ -438,6 +523,11 @@ private:
     mutable QRecursiveMutex mClientMutex;
 };
 
+/**
+ * @brief Target process for debugging
+ * 
+ * Manages the execution of the target program and communication with the debugger.
+ */
 class DebugTarget : public QThread
 {
     Q_OBJECT
@@ -469,6 +559,11 @@ protected:
     void run() override;
 };
 
+/**
+ * @brief Base class for debugger clients
+ * 
+ * Provides a common interface for different debugger implementations.
+ */
 class DebuggerClient : public QThread
 {
     Q_OBJECT

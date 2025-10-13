@@ -42,61 +42,110 @@ class QTemporaryFile;
 
 using PTabStop = std::shared_ptr<TabStop>;
 
+/**
+ * @brief Code editor component based on QSynEdit
+ * 
+ * This class extends QSynEdit to provide specialized functionality for 
+ * source code editing, including syntax highlighting, code completion,
+ * bracket matching, and integration with the IDE's features.
+ * 
+ * The Editor class handles:
+ * - Syntax highlighting and color schemes
+ * - Code completion and header completion
+ * - Bracket and parenthesis matching
+ * - Code folding
+ * - Bookmarks and breakpoints
+ * - Integration with project and compiler systems
+ */
 class Editor : public QSynedit::QSynEdit
 {
     Q_OBJECT
 public:
+    /**
+     * @brief Types of last symbol processed for context-aware operations
+     * 
+     * Used to determine context for code completion and other language-aware features.
+     */
     enum class LastSymbolType {
-        Identifier,
-        ScopeResolutionOperator,          //'::'
-        ObjectMemberOperator,             //'.'
-        PointerMemberOperator,            //'->'
-        PointerToMemberOfObjectOperator,  //'.*'
-        PointerToMemberOfPointerOperator, //'->*'
-        MatchingBracket,
-        BracketMatched,
-        MatchingParenthesis,
-        ParenthesisMatched,
-        TildeSign,     // '~'
-        AsteriskSign,  // '*'
-        AmpersandSign, // '&'
-        MatchingAngleQuotation,
-        AngleQuotationMatched,
-        None
+        Identifier,                    //!< Regular identifier
+        ScopeResolutionOperator,       //!< '::' operator
+        ObjectMemberOperator,          //!< '.' operator
+        PointerMemberOperator,         //!< '->' operator
+        PointerToMemberOfObjectOperator, //!< '.*' operator
+        PointerToMemberOfPointerOperator, //!< '->*' operator
+        MatchingBracket,               //!< Bracket matching in progress
+        BracketMatched,                //!< Bracket matching completed
+        MatchingParenthesis,           //!< Parenthesis matching in progress
+        ParenthesisMatched,            //!< Parenthesis matching completed
+        TildeSign,                     //!< '~' character
+        AsteriskSign,                  //!< '*' character
+        AmpersandSign,                 //!< '&' character
+        MatchingAngleQuotation,        //!< Matching angle brackets or quotation marks
+        AngleQuotationMatched,         //!< Angle brackets or quotation marks matched
+        None                           //!< No specific symbol type
     };
 
+    /**
+     * @brief Margin numbers for the editor gutter
+     * 
+     * Defines the different margin areas in the editor's gutter.
+     */
     enum MarginNumber {
-        LineNumberMargin = 0,
-        MarkerMargin = 1,
-        FoldMargin = 2,
+        LineNumberMargin = 0,          //!< Line numbers margin
+        MarkerMargin = 1,              //!< Marker margin (breakpoints, errors)
+        FoldMargin = 2,                //!< Code folding margin
     };
 
-    enum MarkerNumber { BreakpointMarker, ErrorMarker, WarningMarker };
+    /**
+     * @brief Marker numbers for the editor
+     * 
+     * Defines different types of markers that can be displayed in the editor.
+     */
+    enum MarkerNumber { 
+        BreakpointMarker,              //!< Breakpoint marker
+        ErrorMarker,                   //!< Error marker
+        WarningMarker                  //!< Warning marker
+    };
 
+    /**
+     * @brief Status of quotation parsing
+     * 
+     * Used to track the state when parsing strings and character literals.
+     */
     enum class QuoteStatus {
-        NotQuote,
-        SingleQuote,
-        SingleQuoteEscape,
-        DoubleQuote,
-        DoubleQuoteEscape,
-        RawString,
-        RawStringNoEscape,
-        RawStringEnd
+        NotQuote,                      //!< Not in a quotation
+        SingleQuote,                   //!< In a single-quoted string
+        SingleQuoteEscape,             //!< In a single-quoted string after escape character
+        DoubleQuote,                   //!< In a double-quoted string
+        DoubleQuoteEscape,             //!< In a double-quoted string after escape character
+        RawString,                     //!< In a raw string literal
+        RawStringNoEscape,             //!< In a raw string with no escape sequences
+        RawStringEnd                   //!< At the end of a raw string
     };
 
+    /**
+     * @brief Purpose of word operations
+     * 
+     * Defines the context for word-based operations like completion and evaluation.
+     */
     enum class WordPurpose {
-        wpCompletion, // walk backwards over words, array, functions, parents, no forward movement
-        wpEvaluation, // walk backwards over words, array, functions, parents, forwards over words,
-                      // array
-        wpHeaderCompletion,      // walk backwards over path
-        wpHeaderCompletionStart, // walk backwards over path, including start '<' or '"'
-        wpDirective,             // preprocessor
-        wpJavadoc,               // javadoc
-        wpInformation, // walk backwards over words, array, functions, parents, forwards over words
-        wpATTASMKeywords,
-        wpKeywords
+        wpCompletion,                  //!< Code completion context
+        wpEvaluation,                  //!< Expression evaluation context
+        wpHeaderCompletion,            //!< Header completion context
+        wpHeaderCompletionStart,       //!< Starting header completion
+        wpDirective,                   //!< Preprocessor directive context
+        wpJavadoc,                     //!< Javadoc comment context
+        wpInformation,                 //!< Information gathering context
+        wpATTASMKeywords,              //!< AT&T assembly keywords context
+        wpNASMPreprocessDirective,     //!< NASM preprocessor directive context
+        wpKeywords                     //!< Keywords context
     };
 
+    /**
+     * @brief Types of tooltips that can be displayed
+     * 
+     * Defines different types of information that can be shown in tooltips.
+     */
     enum class TipType {
         Preprocessor, // cursor hovers above preprocessor line
         Identifier,   // cursor hovers above identifier

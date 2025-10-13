@@ -31,72 +31,235 @@ class CppParser;
 class EditorList;
 class QFileSystemWatcher;
 
+/**
+ * @brief Types of nodes in the project model
+ * 
+ * Defines the different types of items that can appear in the project tree view.
+ */
 enum ProjectModelNodeType {
-    DUMMY_HEADERS_FOLDER,
-    DUMMY_SOURCES_FOLDER,
-    DUMMY_OTHERS_FOLDER,
-    Folder,
-    File
+    DUMMY_HEADERS_FOLDER,    //!< Dummy folder for headers
+    DUMMY_SOURCES_FOLDER,    //!< Dummy folder for sources
+    DUMMY_OTHERS_FOLDER,     //!< Dummy folder for other files
+    Folder,                  //!< Actual folder
+    File                     //!< File node
 };
 
+/**
+ * @brief Record of a project model item
+ * 
+ * Holds basic information about an item in the project model.
+ */
 struct ProjectModelItemRecord {
-    ProjectModelNodeType type;
-    QString fullPath;
+    ProjectModelNodeType type;  //!< Type of the node
+    QString fullPath;           //!< Full path to the item
 };
 
 class ProjectUnit;
 
+/**
+ * @brief Node in the project model tree
+ * 
+ * Represents a node in the tree structure that represents the project in the UI.
+ * This can be a folder or a file, and maintains relationships with parent and child nodes.
+ */
 struct ProjectModelNode;
 using PProjectModelNode = std::shared_ptr<ProjectModelNode>;
 struct ProjectModelNode {
-    QString text;
-    std::weak_ptr<ProjectModelNode> parent;
-    bool isUnit;
-    std::weak_ptr<ProjectUnit> pUnit;
-    int priority;
-    QList<PProjectModelNode> children;
-    ProjectModelNodeType folderNodeType;
-    int level;
+    QString text;                           //!< Display text for the node
+    std::weak_ptr<ProjectModelNode> parent; //!< Parent node
+    bool isUnit;                            //!< Whether this node represents a project unit
+    std::weak_ptr<ProjectUnit> pUnit;       //!< Associated project unit (if isUnit is true)
+    int priority;                           //!< Priority/ordering hint
+    QList<PProjectModelNode> children;      //!< Child nodes
+    ProjectModelNodeType folderNodeType;    //!< Type of folder node
+    int level;                              //!< Nesting level
 };
 
+/**
+ * @brief Layout information for project editors
+ * 
+ * Stores the layout state of editors within a project so it can be restored
+ * when the project is reopened.
+ */
 struct ProjectEditorLayout {
-    QString filename;
-    int top;
-    int left;
-    int caretX;
-    int caretY;
-    int order;
-    bool isFocused;
-    bool isOpen;
+    QString filename;    //!< Path to the file
+    int top;             //!< Top scroll position
+    int left;            //!< Left scroll position
+    int caretX;          //!< Caret X position
+    int caretY;          //!< Caret Y position
+    int order;           //!< Tab order
+    bool isFocused;      //!< Whether this editor was focused
+    bool isOpen;         //!< Whether this editor was open
 };
 
 using PProjectEditorLayout = std::shared_ptr<ProjectEditorLayout>;
 
+/**
+ * @brief Represents a unit (file) in a project
+ * 
+ * Each ProjectUnit represents a single file in the project with its specific
+ * compilation options and properties. This allows individual files to have
+ * different settings within the same project.
+ */
 class ProjectUnit
 {
 public:
+    /**
+     * @brief Construct a new Project Unit
+     * 
+     * @param parent Pointer to the parent project
+     */
     explicit ProjectUnit(Project* parent);
+    
+    /**
+     * @brief Get the parent project
+     * 
+     * @return Project* Pointer to the parent project
+     */
     Project* parent() const;
+    
+    /**
+     * @brief Get the file name
+     * 
+     * @return const QString& File name
+     */
     const QString& fileName() const;
+    
+    /**
+     * @brief Set the file name
+     * 
+     * @param newFileName New file name
+     */
     void setFileName(QString newFileName);
+    
+    /**
+     * @brief Get the folder
+     * 
+     * @return const QString& Folder name
+     */
     const QString& folder() const;
+    
+    /**
+     * @brief Set the folder
+     * 
+     * @param newFolder New folder name
+     */
     void setFolder(const QString& newFolder);
+    
+    /**
+     * @brief Check if unit should be compiled
+     * 
+     * @return true If unit should be compiled
+     * @return false If unit should not be compiled
+     */
     bool compile() const;
+    
+    /**
+     * @brief Set whether unit should be compiled
+     * 
+     * @param newCompile Compile flag
+     */
     void setCompile(bool newCompile);
+    
+    /**
+     * @brief Check if unit should be compiled as C++
+     * 
+     * @return true If unit should be compiled as C++
+     * @return false If unit should not be compiled as C++
+     */
     bool compileCpp() const;
+    
+    /**
+     * @brief Set whether unit should be compiled as C++
+     * 
+     * @param newCompileCpp C++ compile flag
+     */
     void setCompileCpp(bool newCompileCpp);
+    
+    /**
+     * @brief Check if build command is overridden
+     * 
+     * @return true If build command is overridden
+     * @return false If build command is not overridden
+     */
     bool overrideBuildCmd() const;
+    
+    /**
+     * @brief Set whether build command is overridden
+     * 
+     * @param newOverrideBuildCmd Override flag
+     */
     void setOverrideBuildCmd(bool newOverrideBuildCmd);
+    
+    /**
+     * @brief Get the build command
+     * 
+     * @return const QString& Build command
+     */
     const QString& buildCmd() const;
+    
+    /**
+     * @brief Set the build command
+     * 
+     * @param newBuildCmd New build command
+     */
     void setBuildCmd(const QString& newBuildCmd);
+    
+    /**
+     * @brief Check if unit should be linked
+     * 
+     * @return true If unit should be linked
+     * @return false If unit should not be linked
+     */
     bool link() const;
+    
+    /**
+     * @brief Set whether unit should be linked
+     * 
+     * @param newLink Link flag
+     */
     void setLink(bool newLink);
+    
+    /**
+     * @brief Get the priority
+     * 
+     * @return int Priority value
+     */
     int priority() const;
+    
+    /**
+     * @brief Set the priority
+     * 
+     * @param newPriority New priority value
+     */
     void setPriority(int newPriority);
+    
+    /**
+     * @brief Get the encoding
+     * 
+     * @return const QByteArray& Encoding
+     */
     const QByteArray& encoding() const;
+    
+    /**
+     * @brief Set the encoding
+     * 
+     * @param newEncoding New encoding
+     */
     void setEncoding(const QByteArray& newEncoding);
 
+    /**
+     * @brief Get the associated model node
+     * 
+     * @return PProjectModelNode& Reference to the model node
+     */
     PProjectModelNode& node();
+    
+    /**
+     * @brief Set the associated model node
+     * 
+     * @param newNode New model node
+     */
     void setNode(const PProjectModelNode& newNode);
 
     //    bool FileMissing() const;
