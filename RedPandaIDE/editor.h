@@ -129,16 +129,15 @@ public:
      * Defines the context for word-based operations like completion and evaluation.
      */
     enum class WordPurpose {
-        wpCompletion,                  //!< Code completion context
-        wpEvaluation,                  //!< Expression evaluation context
-        wpHeaderCompletion,            //!< Header completion context
-        wpHeaderCompletionStart,       //!< Starting header completion
-        wpDirective,                   //!< Preprocessor directive context
-        wpJavadoc,                     //!< Javadoc comment context
-        wpInformation,                 //!< Information gathering context
-        wpATTASMKeywords,              //!< AT&T assembly keywords context
-        wpNASMPreprocessDirective,     //!< NASM preprocessor directive context
-        wpKeywords                     //!< Keywords context
+        wpCompletion, // walk backwards over words, array, functions, parents, no forward movement
+        wpEvaluation, // walk backwards over words, array, functions, parents, forwards over words, array
+        wpHeaderCompletion, // walk backwards over path
+        wpHeaderCompletionStart, // walk backwards over path, including start '<' or '"'
+        wpDirective, // preprocessor
+        wpJavadoc, //javadoc
+        wpInformation, // walk backwards over words, array, functions, parents, forwards over words
+        wpATTASMKeywords,
+        wpKeywords
     };
 
     /**
@@ -147,13 +146,13 @@ public:
      * Defines different types of information that can be shown in tooltips.
      */
     enum class TipType {
-        Preprocessor, // cursor hovers above preprocessor line
-        Identifier,   // cursor hovers above identifier
-        Selection,    // cursor hovers above selection
-        Keyword,
-        Number,
-        None, // mouseover not allowed
-        Error // Cursor hovers above error line/item;
+      Include, // cursor hovers above include
+      Identifier, // cursor hovers above identifier
+      Selection, // cursor hovers above selection
+      Keyword,
+      Number,
+      None, // mouseover not allowed
+      Error //Cursor hovers above error line/item;
     };
 
     struct SyntaxIssue {
@@ -411,9 +410,9 @@ private:
 
     TipType getTipType(QPoint point, QSynedit::BufferCoord& pos);
     void cancelHint();
-    QString getFileHint(const QString& s, bool fromNext);
-    QString getParserHint(const QStringList& expression, const QString& s, int line);
-    void showDebugHint(const QString& s, int line);
+    QString getHeaderFileHint(const QString& s, bool fromNext);
+    QString getParserHint(const QStringList& expression, const QSynedit::BufferCoord& p);
+    void showDebugHint(const QString& s,int line);
     QString getErrorHint(const PSyntaxIssue& issue);
     QString getHintForFunction(const PStatement& statement, const QString& filename, int line);
 
@@ -431,6 +430,8 @@ private:
 
     Editor* openFileInContext(const QString& filename);
     bool needReparse();
+
+    PStatement constructorToClass(PStatement constuctorStatement, const QSynedit::BufferCoord& p);
 
 private:
     bool mInited;
