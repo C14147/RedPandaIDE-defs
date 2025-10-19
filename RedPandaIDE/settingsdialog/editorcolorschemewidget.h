@@ -24,6 +24,13 @@
 #include <QCheckBox>
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
+#include <QCheckBox>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define STATE_CHANGED_SIGNAL &QCheckBox::checkStateChanged
+#else
+#define STATE_CHANGED_SIGNAL &QCheckBox::stateChanged
+#endif
 
 namespace Ui {
 class EditorColorSchemeWidget;

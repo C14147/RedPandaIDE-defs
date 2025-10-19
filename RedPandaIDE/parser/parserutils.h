@@ -28,7 +28,12 @@
 #include <memory>
 #include <functional>
 
-using GetFileStreamCallBack = std::function<bool(const QString&, QStringList&)>;
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4267)
+#endif
+
+using GetFileStreamCallBack = std::function<bool (const QString&, QStringList&)>;
 
 enum class ParserLanguage {
     C,
