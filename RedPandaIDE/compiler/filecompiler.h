@@ -23,7 +23,9 @@ class FileCompiler : public Compiler
 {
     Q_OBJECT
 public:
-    FileCompiler(const QString& filename, const QByteArray& encoding, CppCompileType compileType,
+    FileCompiler(const QString& filename, const QByteArray& encoding,
+                 FileType fileType,
+                 CppCompileType compileType,
                  bool onlyCheckSyntax);
     FileCompiler(const FileCompiler&) = delete;
     FileCompiler& operator=(const FileCompiler&) = delete;
@@ -34,6 +36,7 @@ protected:
 private:
     QByteArray mEncoding;
     CppCompileType mCompileType;
+    FileType mFileType;
     // Compiler interface
 protected:
     bool prepareForRebuild() override;

@@ -23,6 +23,7 @@
 #include <QFrame>
 #include <QStringList>
 #include <QTimer>
+#include <QElapsedTimer>
 #include <QWidget>
 #include <QElapsedTimer>
 #include "gutter.h"
