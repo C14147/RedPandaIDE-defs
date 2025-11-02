@@ -126,10 +126,11 @@ enum class StatementKind {
     Parameter,
     Block,
     Lambda,
-    UserCodeSnippet, // user code template
-    Keyword,         // keywords
-    KeywordType,     // keywords for type (for color management)
-    Alias,           // using alias
+    Label,
+    UserCodeSnippet,  // user code template
+    Keyword, // keywords
+    KeywordType, //keywords for type (for color management)
+    Alias, // using alias
 };
 
 inline uint qHash(const StatementKind& value, uint seed)

@@ -234,7 +234,7 @@ public:
     void clearBookmarks();
     void removeBreakpointFocus();
     void modifyBreakpointProperty(int line);
-    void setActiveBreakpointFocus(int Line, bool setFocus = true);
+    void setActiveBreakpointFocus(int Line, bool setFocus=true);
     QString getPreviousWordAtPositionForSuggestion(const QSynedit::BufferCoord& p,
                                                    QSynedit::TokenType& tokenType);
     QString getPreviousWordAtPositionForCompleteFunctionDefinition(const QSynedit::BufferCoord& p);
