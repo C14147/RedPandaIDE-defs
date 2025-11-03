@@ -118,6 +118,8 @@ public:
 
     const QString categoryIcon() const;
 
+    const QString& styleSheet() const;
+
     bool copyTo(const QString& targetFolder);
 
 public:
@@ -139,6 +141,7 @@ private:
     QString mDefaultColorScheme;
     QString mDefaultIconSet;
     QString mFilename;
+    QString mStyleSheet = "";
     ThemeType mType;
     ThemeCategory mCategory;
 };

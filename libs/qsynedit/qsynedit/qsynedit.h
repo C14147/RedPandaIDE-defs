@@ -23,7 +23,6 @@
 #include <QFrame>
 #include <QStringList>
 #include <QTimer>
-#include <QElapsedTimer>
 #include <QWidget>
 #include <QElapsedTimer>
 #include "gutter.h"
@@ -113,6 +112,13 @@ enum class SearchAction {
     Exit
 };
 
+/*
+using SynPaintTransientProc = std::function<void(const QPaintDevice& paintDevice,
+        SynTransientType transientType)>;
+        */
+// using ProcessCommandProc = std::function<void(EditCommand& command, QChar& AChar, void* data)>;
+// using MouseCursorProc = std::function<void(const BufferCoord& aLineCharPos, QCursor &  aCursor)>;
+// using PaintProc = std::function<void(const QPaintDevice& paintDevice )>;
 using SearchMathedProc = std::function<SearchAction(const QString& sSearch,
     const QString& sReplace, int Line, int ch, int wordLen)>;
 using SearchConfirmAroundProc = std::function<bool ()>;
@@ -218,26 +224,26 @@ public:
     QChar nextNonSpaceChar(int line, int ch);
     QChar lastNonSpaceChar(int line, int ch);
 
-    bool isPointInSelection(const BufferCoord& pos) const;
+    bool isPointInSelection(const BufferCoord& Value) const;
     BufferCoord nextWordPos();
-    BufferCoord nextWordPos(const BufferCoord& pos);
+    BufferCoord nextWordPosEx(const BufferCoord& XY);
     BufferCoord wordStart();
-    BufferCoord wordStart(const BufferCoord& pos);
+    BufferCoord wordStartEx(const BufferCoord& XY);
     BufferCoord wordEnd();
-    BufferCoord wordEnd(const BufferCoord& pos);
+    BufferCoord wordEndEx(const BufferCoord& XY);
     BufferCoord prevWordPos();
-    BufferCoord prevWordPos(const BufferCoord& pos);
+    BufferCoord prevWordPosEx(const BufferCoord& XY);
 
     //Caret
     void showCaret();
     void hideCaret();
-    void setCaretX(int ch);
-    void setCaretY(int line);
-    void setCaretXY(const BufferCoord& pos);
-    void setCaretXYCentered(const BufferCoord& pos);
-    void setCaretAndSelection(const BufferCoord& posCaret,
-                              const BufferCoord& posSelBegin,
-                              const BufferCoord& posSelEnd);
+    void setCaretX(int value);
+    void setCaretY(int value);
+    void setCaretXY(const BufferCoord& value);
+    void setCaretXYCentered(const BufferCoord& value);
+    void setCaretAndSelection(const BufferCoord& ptCaret,
+                              const BufferCoord& ptSelBegin,
+                              const BufferCoord& ptSelEnd);
 
     bool inputMethodOn();
 
@@ -245,7 +251,7 @@ public:
     void unCollpaseAll();
     void uncollapseAroundLine(int line);
     PCodeFoldingRange foldHidesLine(int line);
-    void setSelLength(int len);
+    void setSelLength(int Value);
     void setSelText(const QString& text);
 
     void replaceLine(int line, const QString& lineText);

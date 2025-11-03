@@ -336,9 +336,6 @@ private:
     void backupMenuForEditor(QMenu* menu, QList<QAction*>& backup);
     void validateCompilerSet(int index);
 
-    void updateProblemSetName();
-    void saveProblemSet(const QString& filePath);
-
 private slots:
     void setupSlotsForProject();
     void onProjectUnitAdded(const QString& filename);
@@ -649,7 +646,6 @@ private slots:
     void onRemoveProblem();
 
     void onSaveProblemSet();
-    void onSaveProblemSetAs();
 
     void onLoadProblemSet();
 
@@ -805,9 +801,7 @@ private slots:
     void on_actionDocument_triggered();
 
     void on_actionNew_GAS_File_triggered();
-#if defined(ARCH_X86_64) || defined(ARCH_X86)
-    void on_actionNew_NASM_File_triggered();
-#endif
+
     void on_actionGNU_Assembler_Manual_triggered();
 
 #ifdef ARCH_X86_64
@@ -873,15 +867,15 @@ private slots:
 
     void on_actionCPP_File_triggered();
 
-    void on_actionGAS_triggered();
+    void on_actionATT_ASM_triggered();
+
+    void on_actionIntel_ASM_triggered();
 
     void on_actionGenerate_GIMPLE_triggered();
 
     void on_actionPreprocess_triggered();
 
     void on_actionPaste_indentation_triggered();
-
-    void on_actionNASM_triggered();
 
 private:
     Ui::MainWindow* ui;
@@ -1024,16 +1018,15 @@ private:
     QAction* mBookmark_RemoveAll;
     QAction* mBookmark_Modify;
 
-    //action for problem set
-    QAction * mProblemSet_New;
-    QAction * mProblemSet_Rename;
-    QAction * mProblemSet_Save;
-    QAction * mProblemSet_SaveAs;
-    QAction * mProblemSet_Load;
-    QAction * mProblemSet_ImportFPS;
-    QAction * mProblemSet_ExportFPS;
-    QAction * mProblemSet_AddProblem;
-    QAction * mProblemSet_RemoveProblem;
+    // action for problem set
+    QAction* mProblemSet_New;
+    QAction* mProblemSet_Rename;
+    QAction* mProblemSet_Save;
+    QAction* mProblemSet_Load;
+    QAction* mProblemSet_ImportFPS;
+    QAction* mProblemSet_ExportFPS;
+    QAction* mProblemSet_AddProblem;
+    QAction* mProblemSet_RemoveProblem;
 
     // action for problem
     QAction* mProblem_OpenSource;

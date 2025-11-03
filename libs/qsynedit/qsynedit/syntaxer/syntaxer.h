@@ -162,7 +162,6 @@ public:
     virtual void setLine(const QString& newLine, int lineNumber) = 0;
     virtual void resetState() = 0;
     virtual QSet<QString> keywords();
-    QSet<QString> keywords(const QString& prefix);
     virtual QMap<QString,QSet<QString>> scopedKeywords();
 
     virtual QString languageName() = 0;
@@ -193,12 +192,10 @@ protected:
     void addAttribute(PTokenAttribute attribute) { mAttributes[attribute->name()]=attribute; }
     void clearAttributes() { mAttributes.clear(); }
     virtual int attributesCount() const { return mAttributes.size(); }
-    void resetKeywordsCache() { mFilteredKeywordsCache.clear(); };
 
 private:
     QMap<QString,PTokenAttribute> mAttributes;
     QSet<QChar> mWordBreakChars;
-    QMap<QString, QSet<QString>> mFilteredKeywordsCache;
 };
 
 using PSyntaxer = std::shared_ptr<Syntaxer>;

@@ -215,11 +215,6 @@ public:
         //         && !token.contains("\""));
     }
 
-    static constexpr bool isSpaceChar(const QChar& ch) {
-        return ch==' ' || ch =='\t';
-    }
-
-
 signals:
     void onProgress(const QString& fileName, int total, int current);
     void onBusy();
@@ -522,7 +517,6 @@ private:
     void handleVar(const QString& typePrefix, bool isExtern, bool isStatic, int maxIndex);
     void handleInheritance(PStatement derivedClass, PClassInheritanceInfo pInfo);
     void handleInheritances();
-    void handleLabel();
     void skipRequires(int maxIndex);
     void internalParse(const QString& fileName);
     //    function FindMacroDefine(const Command: AnsiString): PStatement;
@@ -541,6 +535,10 @@ private:
 
     bool splitLastMember(const QString& token, QString& lastMember, QString& remaining);
 
+    static constexpr bool isSpaceChar(const QChar& ch)
+    {
+        return ch == ' ' || ch == '\t';
+    }
 
     static constexpr  bool isIdentifierOrPointerOrReferenceStart(const QChar& ch){
         return ch.isLetter()

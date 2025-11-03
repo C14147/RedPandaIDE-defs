@@ -41,7 +41,6 @@ private:
 
 enum class CodeCompletionType {
     Normal,
-    Labels,
     ComplexKeyword,
     FunctionWithoutDefinition,
     Namespaces,
@@ -160,8 +159,6 @@ private:
                                                    const QStringList& memberExpression,
                                                    const QString& fileName, int line);
 
-    void getCompletionListForLabels(const QString& fileName,
-                                    int line);
     void getCompletionListForComplexKeyword(const QString& preWord);
     void getCompletionListForNamespaces(const QString& preWord, const QString& fileName, int line);
     void getCompletionListForTypes(const QString& preWord, const QString& fileName, int line);
