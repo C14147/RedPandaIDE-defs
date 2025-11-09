@@ -166,12 +166,24 @@ public:
      * @brief displayX
      * @return
      */
-    DisplayCoord displayXY() const;
-    int displayX() const;
-    int displayY() const;
-    BufferCoord caretXY() const;
-    int caretX() const;
-    int caretY() const;
+    DisplayCoord displayXY() const {
+        return bufferToDisplayPos(caretXY());
+    }
+    int displayX() const {
+        return displayXY().x;
+    }
+    int displayY() const {
+        return displayXY().row;
+    }
+    BufferCoord caretXY() const {
+        return BufferCoord{caretX(),caretY()};
+    }
+    int caretX() const {
+        return mCaretX;
+    }
+    int caretY() const {
+        return mCaretY;
+    }
 
     void invalidateGutter();
     void invalidateGutterLine(int aLine);
@@ -217,12 +229,12 @@ public:
     void invalidate();
     bool selAvail() const;
     bool colSelAvail() const;
-    QString wordAtCursor();
-    QString wordAtRowCol(const BufferCoord& XY);
+    QString wordAtCursor() const;
+    QString wordAtRowCol(const BufferCoord& XY) const;
 
-    QChar charAt(const BufferCoord& pos);
-    QChar nextNonSpaceChar(int line, int ch);
-    QChar lastNonSpaceChar(int line, int ch);
+    QChar charAt(const BufferCoord& pos) const;
+    QChar nextNonSpaceChar(int line, int ch) const;
+    QChar lastNonSpaceChar(int line, int ch) const;
 
     bool isPointInSelection(const BufferCoord& Value) const;
     BufferCoord nextWordPos();
@@ -237,15 +249,21 @@ public:
     //Caret
     void showCaret();
     void hideCaret();
-    void setCaretX(int value);
-    void setCaretY(int value);
-    void setCaretXY(const BufferCoord& value);
-    void setCaretXYCentered(const BufferCoord& value);
-    void setCaretAndSelection(const BufferCoord& ptCaret,
-                              const BufferCoord& ptSelBegin,
-                              const BufferCoord& ptSelEnd);
+    void setCaretX(int ch) {
+        setCaretXY({ch,mCaretY});
+    }
+    void setCaretY(int line) {
+        setCaretXY({mCaretX,line});
+    }
+    void setCaretXY(const BufferCoord& pos);
+    void setCaretXYCentered(const BufferCoord& pos);
+    void setCaretAndSelection(const BufferCoord& posCaret,
+                              const BufferCoord& posSelBegin,
+                              const BufferCoord& posSelEnd);
 
-    bool inputMethodOn();
+    bool inputMethodOn() const {
+        return !mInputPreeditString.isEmpty();
+    }
 
     void collapseAll();
     void unCollpaseAll();
@@ -310,12 +328,12 @@ public:
     QStringList contents();
     QString text();
 
-    bool getPositionOfMouse(BufferCoord& aPos);
-    bool getLineOfMouse(int& line);
-    bool pointToCharLine(const QPoint& point, BufferCoord& coord);
-    bool pointToLine(const QPoint& point, int& line);
-    bool isIdentChar(const QChar& ch);
-    bool isIdentStartChar(const QChar& ch);
+    bool getPositionOfMouse(BufferCoord& aPos) const;
+    bool getLineOfMouse(int& line) const;
+    bool pointToCharLine(const QPoint& point, BufferCoord& coord) const;
+    bool pointToLine(const QPoint& point, int& line) const;
+    bool isIdentChar(const QChar& ch) const;
+    bool isIdentStartChar(const QChar& ch) const;
 
     void setRainbowAttrs(const PTokenAttribute &attr0,
                          const PTokenAttribute &attr1,
@@ -359,7 +377,7 @@ public:
     void setGutterWidth(int value);
 
     bool modified() const;
-    void setModified(bool Value);
+    void setModified(bool Value, bool skipUndo=false);
 
     PSyntaxer syntaxer() const;
     void setSyntaxer(const PSyntaxer &syntaxer);
@@ -529,7 +547,7 @@ private:
     void doUpdateVScrollbar();
     void updateCaret();
     void recalcCharExtent();
-    void updateModifiedStatus();
+    void updateModifiedStatusForUndoRedo();
     int reparseLines(int startLine, int endLine, bool needRescanFolds = true,  bool toDocumentEnd = true);
     //void reparseLine(int line);
     void uncollapse(PCodeFoldingRange FoldRange);
@@ -571,11 +589,11 @@ private:
     void doGotoEditorEnd(bool isSelection);
     void setSelectedTextEmpty();
     void setSelTextPrimitive(const QStringList& text);
-    void setSelTextPrimitiveEx(SelectionMode PasteMode,
+    void setSelTextPrimitiveEx(SelectionMode mode,
                                const QStringList& text);
-    void doLinesDeleted(int FirstLine, int Count);
-    void doLinesInserted(int FirstLine, int Count);
-    void properSetLine(int ALine, const QString& ALineText, bool notify = true);
+    void doLinesDeleted(int firstLine, int count);
+    void doLinesInserted(int firstLine, int count);
+    void properSetLine(int line, const QString& sLineText, bool notify = true);
 
     //primitive edit operations
     void doDeleteText(BufferCoord startPos, BufferCoord endPos, SelectionMode mode);
@@ -598,7 +616,7 @@ private:
 
     void clearUndo();
     BufferCoord getPreviousLeftBrace(int x,int y);
-    bool canDoBlockIndent();
+    bool canDoBlockIndent() const;
 
     QRect calculateCaretRect() const;
     QRect calculateInputCaretRect() const;
