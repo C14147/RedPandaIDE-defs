@@ -28,12 +28,11 @@ class ProjectCompileParamatersWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    explicit ProjectCompileParamatersWidget(const QString& name, const QString& group,
-                                            QWidget* parent = nullptr);
+    explicit ProjectCompileParamatersWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~ProjectCompileParamatersWidget();
 
 private:
-    Ui::ProjectCompileParamatersWidget* ui;
+    Ui::ProjectCompileParamatersWidget *ui;
 
     // SettingsWidget interface
 protected:
@@ -43,7 +42,7 @@ private slots:
     void on_btnChooseLib_clicked();
 
 protected:
-    void updateIcons(const QSize& size) override;
+    void updateIcons(const QSize &size) override;
 };
 
 #endif // PROJECTCOMPILEPARAMATERSWIDGET_H

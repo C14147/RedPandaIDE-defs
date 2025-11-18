@@ -25,13 +25,12 @@ class OJProblem;
 using POJProblem = std::shared_ptr<OJProblem>;
 
 class QTcpSocket;
-class CompetitiveCompanionThread : public QThread
-{
+class CompetitiveCompanionThread: public QThread {
     Q_OBJECT
 public:
-    explicit CompetitiveCompanionThread(QObject* parent = nullptr);
+    explicit CompetitiveCompanionThread(QObject *parent=nullptr);
     CompetitiveCompanionThread(const CompetitiveCompanionThread&) = delete;
-    CompetitiveCompanionThread& operator=(const CompetitiveCompanionThread&) = delete;
+    CompetitiveCompanionThread &operator=(const CompetitiveCompanionThread&) = delete;
     void stop();
     bool waitStart();
     void waitStop();
@@ -44,7 +43,6 @@ private slots:
     // QThread interface
 protected:
     void run() override;
-
 private:
     bool mStop;
     QString mBatchId;
@@ -55,22 +53,22 @@ private:
     bool mStartOk;
 };
 
-class CompetitiveCompanionHandler : public QObject
-{
+
+class CompetitiveCompanionHandler: public QObject {
     Q_OBJECT
 public:
-    explicit CompetitiveCompanionHandler(QObject* parent = nullptr);
+    explicit CompetitiveCompanionHandler(QObject* parent=nullptr);
     CompetitiveCompanionHandler(const CompetitiveCompanionHandler&) = delete;
-    CompetitiveCompanionHandler& operator=(const CompetitiveCompanionHandler&) = delete;
+    CompetitiveCompanionHandler &operator =(const CompetitiveCompanionHandler&) = delete;
     void start();
     void stop();
 signals:
     void newProblemReceived(int num, int total, POJProblem newProblem);
 private slots:
     void onNewProblemReceived(int num, int total, POJProblem newProblem);
-
 private:
-    CompetitiveCompanionThread* mThread;
+    CompetitiveCompanionThread *mThread;
 };
+
 
 #endif // COMPETITIVECOMPANIONHANDLER_H

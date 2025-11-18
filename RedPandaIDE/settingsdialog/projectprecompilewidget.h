@@ -29,12 +29,11 @@ class ProjectPreCompileWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    explicit ProjectPreCompileWidget(const QString& name, const QString& group,
-                                     QWidget* parent = nullptr);
+    explicit ProjectPreCompileWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~ProjectPreCompileWidget();
 
 private:
-    Ui::ProjectPreCompileWidget* ui;
+    Ui::ProjectPreCompileWidget *ui;
 
     // SettingsWidget interface
 protected:
@@ -45,7 +44,7 @@ private slots:
 
     // SettingsWidget interface
 protected:
-    void updateIcons(const QSize& size) override;
+    void updateIcons(const QSize &size) override;
 };
 
 #endif // PROJECTPRECOMPILEWIDGET_H

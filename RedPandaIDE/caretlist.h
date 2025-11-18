@@ -23,25 +23,24 @@
 
 class Editor;
 
-struct EditorCaret {
+struct EditorCaret{
     Editor* editor;
     int line;
     int aChar;
 };
-using PEditorCaret = std::shared_ptr<EditorCaret>;
+using PEditorCaret = std::unique_ptr<EditorCaret>;
 
-class CaretList : public QObject
+class CaretList:public QObject
 {
     Q_OBJECT
 public:
     explicit CaretList(QObject* parent = nullptr);
-
 public:
-    void addCaret(Editor* editor, int line, int aChar);
+    void addCaret(Editor *editor, int line, int aChar);
     bool hasPrevious() const;
     bool hasNext() const;
-    PEditorCaret gotoAndGetPrevious();
-    PEditorCaret gotoAndGetNext();
+    const PEditorCaret &gotoAndGetPrevious();
+    const PEditorCaret &gotoAndGetNext();
     void removeEditor(const Editor* editor);
     void reset();
     void pause();
@@ -49,14 +48,13 @@ public:
 public slots:
     void linesDeleted(const Editor* editor, int firstLine, int count);
     void linesInserted(const Editor* editor, int firstLine, int count);
-
 private:
     void removeCaret(int index);
-
 private:
-    QVector<PEditorCaret> mList;
+    std::vector<PEditorCaret> mList;
     int mIndex;
     bool mPauseAdd;
+    static const PEditorCaret NullCaret;
 };
 
 #endif // CARETLIST_H

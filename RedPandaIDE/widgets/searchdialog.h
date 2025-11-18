@@ -14,13 +14,12 @@ class SearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SearchDialog(QWidget* parent = nullptr);
+    explicit SearchDialog(QWidget *parent = nullptr);
     ~SearchDialog();
     void find(const QString& text);
     void replace(const QString& text);
     void findNext();
     void findPrevious();
-
 private:
     void doSearch(bool backward);
 
@@ -30,7 +29,7 @@ private:
 private slots:
     void onTabBarCurrentChanged(int currentIndex);
 
-    void on_cbFind_currentTextChanged(const QString& arg1);
+    void on_cbFind_currentTextChanged(const QString &arg1);
 
     void on_btnClose_clicked();
 
@@ -43,8 +42,8 @@ private slots:
     void on_btnReplaceAll_clicked();
 
 private:
-    Ui::SearchDialog* ui;
-    QTabBar* mTabBar;
+    Ui::SearchDialog *ui;
+    QTabBar * mTabBar;
     int mSearchTabIdx;
     int mReplaceTabIdx;
     QSynedit::SearchOptions mSearchOptions;

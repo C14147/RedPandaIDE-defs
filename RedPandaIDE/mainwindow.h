@@ -41,15 +41,21 @@
 #include "customfileiconprovider.h"
 #include "problems/competitivecompenionhandler.h"
 
+
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-enum class CompileTarget { Invalid, None, File, Project, SyntaxCheck };
+enum class CompileTarget {
+    Invalid, None, File, Project, SyntaxCheck
+};
 
-enum class RunType { Normal, CurrentProblemCase, ProblemCases };
+enum class RunType {
+    Normal,
+    CurrentProblemCase,
+    ProblemCases
+};
+
 
 class EditorList;
 class QLabel;
@@ -67,12 +73,12 @@ class ProjectUnit;
 class ColorSchemeItem;
 class VisitHistoryManager;
 
-#define DPI_CHANGED_EVENT ((QEvent::Type)(QEvent::User + 1))
+#define DPI_CHANGED_EVENT ((QEvent::Type)(QEvent::User+1))
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    enum class CompileIssuesState {
+    enum class CompileIssuesState{
         CompilationResultFilled,
         Compiling,
         ProjectCompilationResultFilled,
@@ -108,43 +114,46 @@ class MainWindow : public QMainWindow
     using PTabWidgetInfo = std::shared_ptr<TabWidgetInfo>;
 
 public:
-    MainWindow(QWidget* parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void updateForEncodingInfo(bool clear = false);
-    void updateForEncodingInfo(const Editor* editor, bool clear = false);
-    void updateStatusbarForLineCol(bool clear = false);
-    void updateStatusbarForLineCol(const Editor* editor, bool clear = false);
-    void updateForStatusbarModeInfo(bool clear = false);
-    void updateForStatusbarModeInfo(const Editor* editor, bool clear = false);
+    void updateForEncodingInfo(bool clear=false);
+    void updateForEncodingInfo(const Editor* editor, bool clear=false);
+    void updateStatusbarForLineCol(bool clear=false);
+    void updateStatusbarForLineCol(const Editor* editor, bool clear=false);
+    void updateForStatusbarModeInfo(bool clear=false);
+    void updateForStatusbarModeInfo(const Editor* editor, bool clear=false);
     void updateStatusbarMessage(const QString& s);
     void setProjectCurrentFile(const QString& filename);
     void updateEditorSettings();
     void updateEditorBookmarks();
     void updateEditorBreakpoints();
     void updateEditorActions();
-    void updateEncodingActions(const Editor* e);
-    void updateEditorActions(const Editor* e);
+    void updateEncodingActions(const Editor *e);
+    void updateEditorActions(const Editor *e);
     void updateProjectActions();
     void updateCompileActions();
     void updateCompileActions(const Editor* e);
     void updateEditorColorSchemes();
-    void updateFileTypeActions(const Editor* e);
+    void updateFileTypeActions(const Editor *e);
     void updateCompilerSet();
     void updateCompilerSet(const Editor* e);
     void updateDebuggerSettings();
     void updateActionIcons();
     void checkSyntaxInBack(Editor* e);
     bool parsing();
-    bool compile(bool rebuild = false, CppCompileType compileType = CppCompileType::Normal);
-    void runExecutable(const QString& exeName, const QString& filename, RunType runType,
-                       const QStringList& binDirs);
+    bool compile(bool rebuild=false, CppCompileType compileType=CppCompileType::Normal);
+    void runExecutable(
+            const QString& exeName,
+            const QString& filename,
+            RunType runType,
+            const QStringList& binDirs);
     void runExecutable(RunType runType = RunType::Normal);
     void debug();
     void showSearchPanel(bool showReplace = false);
     void showCPUInfoDialog();
 
-    void setFilesViewRoot(const QString& path, bool setOpenFolder = false);
+    void setFilesViewRoot(const QString& path, bool setOpenFolder=false);
 
     void applySettings();
     void applyUISettings();
@@ -167,19 +176,19 @@ public:
 
     void openFiles(const QStringList& files);
 
-    void newEditor(const QString& suffix = "");
+    void newEditor(const QString& suffix="");
 
     QMenuBar* menuBar() const;
 
-    CPUDialog* cpuDialog() const;
+    CPUDialog *cpuDialog() const;
 
-    Debugger* debugger() const;
+    Debugger *debugger() const;
 
-    EditorList* editorList() const;
+    EditorList *editorList() const;
 
-    SearchInFileDialog* searchInFilesDialog() const;
+    SearchInFileDialog *searchInFilesDialog() const;
 
-    SearchDialog* searchDialog() const;
+    SearchDialog *searchDialog() const;
 
     // Return current UI language code (e.g. "en_US", "zh_CN"). Plugins may call
     // this via the MainWindow pointer passed to IRedPandaPlugin::initialize().
@@ -187,43 +196,40 @@ public:
 
     SearchResultModel* searchResultModel();
 
-    CodeCompletionPopup* completionPopup() const;
+    CodeCompletionPopup *completionPopup() const;
 
-    HeaderCompletionPopup* headerCompletionPopup() const;
+    HeaderCompletionPopup *headerCompletionPopup() const;
 
-    FunctionTooltipWidget* functionTip() const;
+    FunctionTooltipWidget *functionTip() const;
 
-    CaretList& caretList();
+    CaretList &caretList();
     void updateCaretActions();
 
     std::shared_ptr<Project> project();
 
-    const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>>&
-    statementColors() const;
+    const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > &statementColors() const;
 
-    SymbolUsageManager* symbolUsageManager() const;
+    SymbolUsageManager *symbolUsageManager() const;
 
-    CodeSnippetsManager* codeSnippetManager() const;
+    CodeSnippetsManager *codeSnippetManager() const;
 
-    const PTodoParser& todoParser() const;
+    const PTodoParser &todoParser() const;
 
-    ToolsManager* toolsManager() const;
+    ToolsManager *toolsManager() const;
 
     // Plugin manager accessor (may be nullptr if plugins not loaded)
     class PluginManager* pluginManager() const;
 
     bool shouldRemoveAllSettings() const;
 
-    BookmarkModel* bookmarkModel() const;
+    BookmarkModel *bookmarkModel() const;
 
     TodoModel* todoModel();
 
-    Editor* openFile(QString filename, bool activate = true, QTabWidget* page = nullptr,
-                     FileType fileType = FileType::None, const QString& contextFile = QString());
+    Editor* openFile(QString filename, bool activate=true, QTabWidget* page=nullptr, FileType fileType=FileType::None, const QString& contextFile = QString());
     void openProject(QString filename, bool openFiles = true);
-    void changeOptions(const QString& widgetName = QString(), const QString& groupName = QString());
-    void changeProjectOptions(const QString& widgetName = QString(),
-                              const QString& groupName = QString());
+    void changeOptions(const QString& widgetName=QString(), const QString& groupName=QString());
+    void changeProjectOptions(const QString& widgetName=QString(), const QString& groupName=QString());
 
     bool openningFiles() const;
 
@@ -279,7 +285,7 @@ public slots:
 
 private:
     void executeTool(PToolItem item);
-    int calIconSize(const QString& fontName, int fontPointSize);
+    int calIconSize(const QString &fontName, int fontPointSize);
     void hideAllSearchDialogs();
     void prepareSearchDialog();
     void prepareSearchInFilesDialog();
@@ -291,7 +297,7 @@ private:
     void stretchMessagesPanel(bool open);
     void stretchExplorerPanel(bool open);
     void prepareDebugger();
-    void doAutoSave(Editor* e);
+    void doAutoSave(Editor *e);
     void createCustomActions();
     void initToolButtons();
     void buildContextMenus();
@@ -301,12 +307,16 @@ private:
     QStringList getBinDirsForCurrentEditor();
     QStringList getDefaultCompilerSetBinDirs();
     void openShell(const QString& folder, const QString& shellCommand, const QStringList& binDirs);
-    QAction* createAction(const QString& text, QWidget* parent,
-                          QKeySequence shortcut = QKeySequence(),
+    QAction* createAction(const QString& text,
+                          QWidget* parent,
+                          QKeySequence shortcut=QKeySequence(),
                           Qt::ShortcutContext shortcutContext = Qt::WidgetWithChildrenShortcut);
-    QAction* createGlobalAction(const QString& text, const QString& objectName,
-                                const QString& groupName, QKeySequence shortcut = QKeySequence());
-    void scanActiveProject(bool parse = false);
+    QAction* createGlobalAction(
+            const QString &text,
+            const QString &objectName,
+            const QString &groupName,
+            QKeySequence shortcut=QKeySequence());
+    void scanActiveProject(bool parse=false);
     void showSearchReplacePanel(bool show);
     void clearIssues();
     void doCompileRun(RunType runType);
@@ -315,12 +325,12 @@ private:
     void doGeneratePreprocessed();
     void updateProblemCaseOutput(POJProblemCase problemCase);
     void applyCurrentProblemCaseChanges();
-    void showHideInfosTab(QWidget* widget, bool show);
-    void showHideMessagesTab(QWidget* widget, bool show);
+    void showHideInfosTab(QWidget *widget, bool show);
+    void showHideMessagesTab(QWidget *widget, bool show);
     void prepareTabInfosData();
     void prepareTabMessagesData();
-    void newProjectUnitFile(const QString& suffix = "");
-    void fillProblemCaseInputAndExpected(const POJProblemCase& problemCase);
+    void newProjectUnitFile(const QString& suffix="");
+    void fillProblemCaseInputAndExpected(const POJProblemCase &problemCase);
 
     void doFilesViewRemoveFile(const QModelIndex& index);
 
@@ -328,30 +338,33 @@ private:
     void setProjectViewCurrentUnit(std::shared_ptr<ProjectUnit> unit);
 
     void reparseNonProjectEditors();
-    QString switchHeaderSourceTarget(Editor* editor);
+    QString switchHeaderSourceTarget(Editor *editor);
 
     void modifyBreakpointCondition(int index);
     void initEditorActions();
-    void changeEditorActionParent(QAction* action, const QString& groupName);
-    void backupMenuForEditor(QMenu* menu, QList<QAction*>& backup);
+    void changeEditorActionParent(QAction *action, const QString& groupName);
+    void backupMenuForEditor(QMenu* menu, QList<QAction *> &backup);
     void validateCompilerSet(int index);
+
+    void updateProblemSetName();
+    void saveProblemSet(const QString& filePath);
 
 private slots:
     void setupSlotsForProject();
-    void onProjectUnitAdded(const QString& filename);
-    void onProjectUnitRemoved(const QString& filename);
-    void onProjectUnitRenamed(const QString& oldFilename, const QString& newFilename);
+    void onProjectUnitAdded(const QString &filename);
+    void onProjectUnitRemoved(const QString &filename);
+    void onProjectUnitRenamed(const QString &oldFilename, const QString& newFilename);
     void onProjectViewNodeRenamed();
-    void setDockExplorerToArea(const Qt::DockWidgetArea& area);
-    void setDockMessagesToArea(const Qt::DockWidgetArea& area);
+    void setDockExplorerToArea(const Qt::DockWidgetArea &area);
+    void setDockMessagesToArea(const Qt::DockWidgetArea &area);
 #ifdef ENABLE_VCS
     void updateVCSActions();
 #endif
     void invalidateProjectProxyModel();
-    void onEditorRenamed(const QString& oldFilename, const QString& newFilename, bool firstSave);
+    void onEditorRenamed(const QString &oldFilename, const QString &newFilename, bool firstSave);
     void onAutoSaveTimeout();
-    void onFileChanged(const QString& path);
-    void onDirChanged(const QString& path);
+    void onFileChanged(const QString &path);
+    void onDirChanged(const QString &path);
     void onFilesViewPathChanged();
     void onWatchViewContextMenu(const QPoint& pos);
     void onBookmarkContextMenu(const QPoint& pos);
@@ -365,10 +378,10 @@ private slots:
     void onFilesViewContextMenu(const QPoint& pos);
     void onLstProblemSetContextMenu(const QPoint& pos);
     void onTableProblemCasesContextMenu(const QPoint& pos);
-    void onToolsOutputContextMenu(const QPoint& pos);
+    void onToolsOutputContextMenu(const QPoint&pos);
 
-    void onProblemSetIndexChanged(const QModelIndex& current, const QModelIndex& previous);
-    void onProblemCaseIndexChanged(const QModelIndex& current, const QModelIndex& previous);
+    void onProblemSetIndexChanged(const QModelIndex &current, const QModelIndex &previous);
+    void onProblemCaseIndexChanged(const QModelIndex &current, const QModelIndex &previous);
     void onProblemNameChanged(int index);
     void onProblemRunCurrentCase();
     void onProblemBatchSetCases();
@@ -438,8 +451,7 @@ private slots:
     void on_EditorTabsRight_tabCloseRequested(int index);
 
     void onFileSystemModelLayoutChanged();
-    void onFileRenamedInFileSystemModel(const QString& path, const QString& oldName,
-                                        const QString& newName);
+    void onFileRenamedInFileSystemModel(const QString &path, const QString &oldName, const QString &newName);
 
     void on_actionOpen_triggered();
 
@@ -478,7 +490,7 @@ private slots:
 
     void on_actionFoldAll_triggered();
 
-    void on_tableIssues_doubleClicked(const QModelIndex& index);
+    void on_tableIssues_doubleClicked(const QModelIndex &index);
 
     void on_actionEncode_in_ANSI_triggered();
 
@@ -572,13 +584,13 @@ private slots:
 
     void on_actionFile_Properties_triggered();
 
-    void on_searchView_doubleClicked(const QModelIndex& index);
+    void on_searchView_doubleClicked(const QModelIndex &index);
 
-    void on_tblStackTrace_doubleClicked(const QModelIndex& index);
+    void on_tblStackTrace_doubleClicked(const QModelIndex &index);
 
-    void on_tblBreakpoints_doubleClicked(const QModelIndex& index);
+    void on_tblBreakpoints_doubleClicked(const QModelIndex &index);
 
-    void on_projectView_doubleClicked(const QModelIndex& index);
+    void on_projectView_doubleClicked(const QModelIndex &index);
 
     void on_actionClose_Project_triggered();
 
@@ -602,12 +614,12 @@ private slots:
 
     void on_actionProject_Open_In_Terminal_triggered();
 
-    void on_classBrowser_doubleClicked(const QModelIndex& index);
+    void on_classBrowser_doubleClicked(const QModelIndex &index);
 
     void on_EditorTabsLeft_currentChanged(int index);
     void on_EditorTabsRight_currentChanged(int index);
 
-    void on_tableTODO_doubleClicked(const QModelIndex& index);
+    void on_tableTODO_doubleClicked(const QModelIndex &index);
 
     void on_actionAbout_triggered();
 
@@ -629,13 +641,13 @@ private slots:
 
     void on_actionEGE_Manual_triggered();
 
-    void on_tableBookmark_doubleClicked(const QModelIndex& index);
+    void on_tableBookmark_doubleClicked(const QModelIndex &index);
 
     void on_actionModify_Bookmark_Description_triggered();
 
     void on_actionLocate_in_Files_View_triggered();
 
-    void on_treeFiles_doubleClicked(const QModelIndex& index);
+    void on_treeFiles_doubleClicked(const QModelIndex &index);
 
     void on_actionOpen_Folder_triggered();
 
@@ -646,6 +658,7 @@ private slots:
     void onRemoveProblem();
 
     void onSaveProblemSet();
+    void onSaveProblemSetAs();
 
     void onLoadProblemSet();
 
@@ -764,9 +777,9 @@ private slots:
 
     void on_actionCompiler_Options_triggered();
 
-    void on_dockExplorer_dockLocationChanged(const Qt::DockWidgetArea& area);
+    void on_dockExplorer_dockLocationChanged(const Qt::DockWidgetArea &area);
 
-    void on_dockMessages_dockLocationChanged(const Qt::DockWidgetArea& area);
+    void on_dockMessages_dockLocationChanged(const Qt::DockWidgetArea &area);
 
     void on_actionToggle_Explorer_Panel_triggered();
 
@@ -801,7 +814,9 @@ private slots:
     void on_actionDocument_triggered();
 
     void on_actionNew_GAS_File_triggered();
-
+#if defined(ARCH_X86_64) || defined(ARCH_X86)
+    void on_actionNew_NASM_File_triggered();
+#endif
     void on_actionGNU_Assembler_Manual_triggered();
 
 #ifdef ARCH_X86_64
@@ -867,9 +882,7 @@ private slots:
 
     void on_actionCPP_File_triggered();
 
-    void on_actionATT_ASM_triggered();
-
-    void on_actionIntel_ASM_triggered();
+    void on_actionGAS_triggered();
 
     void on_actionGenerate_GIMPLE_triggered();
 
@@ -877,67 +890,69 @@ private slots:
 
     void on_actionPaste_indentation_triggered();
 
-private:
-    Ui::MainWindow* ui;
-    bool mFullInitialized;
-    EditorList* mEditorList;
-    QLabel* mFileInfoStatus;
-    LabelWithMenu* mFileEncodingStatus;
-    QLabel* mFileModeStatus;
-    QMenu* mMenuEncoding;
-    QMenu* mMenuNewline;
-    QMenu* mMenuExport;
-    QMenu* mMenuEncodingList;
-    QMenu* mMenuRecentFiles;
-    QMenu* mMenuRecentProjects;
-    QMenu* mMenuNew;
-    QMenu* mMenuInsertCodeSnippet;
-    QList<QAction*> mMenuEditBackup;
-    QList<QAction*> mMenuCodeBackup;
-    QList<QAction*> mMenuSelectionBackup;
-    QList<QAction*> mMenuRefactorBackup;
-    QList<QAction*> mMenuEncodingBackup;
-    QList<QAction*> mMenuExportBackup;
-    QList<QAction*> mMenuMoveCaretBackup;
+    void on_actionNASM_triggered();
 
-    QComboBox* mCompilerSet;
-    CompilerManager* mCompilerManager;
-    Debugger* mDebugger;
-    CPUDialog* mCPUDialog;
-    SearchInFileDialog* mSearchInFilesDialog;
-    SearchDialog* mSearchDialog;
+private:
+    Ui::MainWindow *ui;
+    bool mFullInitialized;
+    EditorList *mEditorList;
+    QLabel *mFileInfoStatus;
+    LabelWithMenu *mFileEncodingStatus;
+    QLabel *mFileModeStatus;
+    QMenu *mMenuEncoding;
+    QMenu *mMenuNewline;
+    QMenu *mMenuExport;
+    QMenu *mMenuEncodingList;
+    QMenu *mMenuRecentFiles;
+    QMenu *mMenuRecentProjects;
+    QMenu *mMenuNew;
+    QMenu *mMenuInsertCodeSnippet;
+    QList<QAction *> mMenuEditBackup;
+    QList<QAction *> mMenuCodeBackup;
+    QList<QAction *> mMenuSelectionBackup;
+    QList<QAction *> mMenuRefactorBackup;
+    QList<QAction *> mMenuEncodingBackup;
+    QList<QAction *> mMenuExportBackup;
+    QList<QAction *> mMenuMoveCaretBackup;
+
+    QComboBox *mCompilerSet;
+    CompilerManager *mCompilerManager;
+    Debugger *mDebugger;
+    CPUDialog *mCPUDialog;
+    SearchInFileDialog *mSearchInFilesDialog;
+    SearchDialog *mSearchDialog;
     bool mQuitting;
     bool mOpeningFiles;
     bool mOpeningProject;
     bool mClosingProject;
     QElapsedTimer mParserTimer;
     QFileSystemWatcher mFileSystemWatcher;
-    std::shared_ptr<Project> mProject; // mProject can be destoryed any time
+    std::shared_ptr<Project> mProject; //mProject can be destoryed any time
     Qt::DockWidgetArea mMessagesDockLocation;
 
-    CodeCompletionPopup* mCompletionPopup;
-    HeaderCompletionPopup* mHeaderCompletionPopup;
-    FunctionTooltipWidget* mFunctionTip;
+    CodeCompletionPopup *mCompletionPopup;
+    HeaderCompletionPopup *mHeaderCompletionPopup;
+    FunctionTooltipWidget *mFunctionTip;
 
     std::shared_ptr<VisitHistoryManager> mVisitHistoryManager;
 
-    TodoModel* mTodoModel;
-    SearchResultModel* mSearchResultModel;
-    BookmarkModel* mBookmarkModel;
-    SearchResultListModel* mSearchResultListModel;
-    SearchResultTreeModel* mSearchResultTreeModel;
-    SearchResultTreeViewDelegate* mSearchViewDelegate;
-    ClassBrowserModel* mClassBrowserModel;
-    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>> mStatementColors;
-    SymbolUsageManager* mSymbolUsageManager;
-    CodeSnippetsManager* mCodeSnippetManager;
+    TodoModel *mTodoModel;
+    SearchResultModel *mSearchResultModel;
+    BookmarkModel *mBookmarkModel;
+    SearchResultListModel *mSearchResultListModel;
+    SearchResultTreeModel *mSearchResultTreeModel;
+    SearchResultTreeViewDelegate *mSearchViewDelegate;
+    ClassBrowserModel *mClassBrowserModel;
+    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > mStatementColors;
+    SymbolUsageManager *mSymbolUsageManager;
+    CodeSnippetsManager *mCodeSnippetManager;
     PTodoParser mTodoParser;
-    ToolsManager* mToolsManager;
-    class PluginManager* mPluginManager;
-    CustomFileSystemModel* mFileSystemModel;
+    ToolsManager *mToolsManager;
+    class PluginManager *mPluginManager;
+    CustomFileSystemModel *mFileSystemModel;
     CustomFileIconProvider mFileSystemModelIconProvider;
-    OJProblemSetModel* mOJProblemSetModel;
-    OJProblemModel* mOJProblemModel;
+    OJProblemSetModel *mOJProblemSetModel;
+    OJProblemModel *mOJProblemModel;
     int mOJProblemSetNameCounter;
 
     QString mClassBrowserCurrentStatement;
@@ -965,108 +980,112 @@ private:
 
     QSet<QString> mFilesChangedNotifying;
 
-    // actions for compile issue table
-    QAction* mTableIssuesCopyAction;
-    QAction* mTableIssuesCopyAllAction;
-    QAction* mTableIssuesClearAction;
+    //actions for compile issue table
+    QAction * mTableIssuesCopyAction;
+    QAction * mTableIssuesCopyAllAction;
+    QAction * mTableIssuesClearAction;
 
-    // actions for search result view
-    QAction* mSearchViewClearAction;
-    QAction* mSearchViewClearAllAction;
+    //actions for search result view
+    QAction * mSearchViewClearAction;
+    QAction * mSearchViewClearAllAction;
 
-    // actions for breakpoint view
-    QAction* mBreakpointViewPropertyAction;
-    QAction* mBreakpointViewRemoveAllAction;
-    QAction* mBreakpointViewRemoveAction;
+    //actions for breakpoint view
+    QAction * mBreakpointViewPropertyAction;
+    QAction * mBreakpointViewRemoveAllAction;
+    QAction * mBreakpointViewRemoveAction;
 
-    // actions for project view
-    QAction* mProject_Add_Folder;
-    QAction* mProject_Rename_Unit;
-    QAction* mProject_Rename_Folder;
-    QAction* mProject_Remove_Folder;
-    QAction* mProject_SwitchFileSystemViewMode;
-    QAction* mProject_SwitchCustomViewMode;
+    //actions for project view
+    QAction * mProject_Add_Folder;
+    QAction * mProject_Rename_Unit;
+    QAction * mProject_Rename_Folder;
+    QAction * mProject_Remove_Folder;
+    QAction * mProject_SwitchFileSystemViewMode;
+    QAction * mProject_SwitchCustomViewMode;
 
-    // actions for class browser
-    QAction* mClassBrowser_Sort_By_Type;
-    QAction* mClassBrowser_Sort_By_Name;
-    QAction* mClassBrowser_Show_Inherited;
-    QAction* mClassBrowser_goto_declaration;
-    QAction* mClassBrowser_goto_definition;
-    QAction* mClassBrowser_Show_CurrentFile;
-    QAction* mClassBrowser_Show_WholeProject;
-    QWidget* mClassBrowserToolbar;
+    //actions for class browser
+    QAction * mClassBrowser_Sort_By_Type;
+    QAction * mClassBrowser_Sort_By_Name;
+    QAction * mClassBrowser_Show_Inherited;
+    QAction * mClassBrowser_goto_declaration;
+    QAction * mClassBrowser_goto_definition;
+    QAction * mClassBrowser_Show_CurrentFile;
+    QAction * mClassBrowser_Show_WholeProject;
+    QWidget * mClassBrowserToolbar;
 
-    // actions for files view
-    QAction* mFilesView_Open;
-    QAction* mFilesView_OpenWithExternal;
-    QAction* mFilesView_OpenInTerminal;
-    QAction* mFilesView_OpenInExplorer;
-    QAction* mFilesView_CreateFolder;
-    QAction* mFilesView_CreateFile;
-    QAction* mFilesView_RemoveFile;
-    QAction* mFilesView_Rename;
+    //actions for files view
+    QAction * mFilesView_Open;
+    QAction * mFilesView_OpenWithExternal;
+    QAction * mFilesView_OpenInTerminal;
+    QAction * mFilesView_OpenInExplorer;
+    QAction * mFilesView_CreateFolder;
+    QAction * mFilesView_CreateFile;
+    QAction * mFilesView_RemoveFile;
+    QAction * mFilesView_Rename;
 
-    // action for debug console
-    QAction* mDebugConsole_ShowDetailLog;
-    QAction* mDebugConsole_Clear;
-    QAction* mDebugConsole_Copy;
-    QAction* mDebugConsole_Paste;
-    QAction* mDebugConsole_SelectAll;
-    // action for bookmarks
-    QAction* mBookmark_Remove;
-    QAction* mBookmark_RemoveAll;
-    QAction* mBookmark_Modify;
+    //action for debug console
+    QAction * mDebugConsole_ShowDetailLog;
+    QAction * mDebugConsole_Clear;
+    QAction * mDebugConsole_Copy;
+    QAction * mDebugConsole_Paste;
+    QAction * mDebugConsole_SelectAll;
+    //action for bookmarks
+    QAction * mBookmark_Remove;
+    QAction * mBookmark_RemoveAll;
+    QAction * mBookmark_Modify;
 
-    // action for problem set
-    QAction* mProblemSet_New;
-    QAction* mProblemSet_Rename;
-    QAction* mProblemSet_Save;
-    QAction* mProblemSet_Load;
-    QAction* mProblemSet_ImportFPS;
-    QAction* mProblemSet_ExportFPS;
-    QAction* mProblemSet_AddProblem;
-    QAction* mProblemSet_RemoveProblem;
+    //action for problem set
+    QAction * mProblemSet_New;
+    QAction * mProblemSet_Rename;
+    QAction * mProblemSet_Save;
+    QAction * mProblemSet_SaveAs;
+    QAction * mProblemSet_Load;
+    QAction * mProblemSet_ImportFPS;
+    QAction * mProblemSet_ExportFPS;
+    QAction * mProblemSet_AddProblem;
+    QAction * mProblemSet_RemoveProblem;
 
-    // action for problem
-    QAction* mProblem_OpenSource;
-    QAction* mProblem_Properties;
-    QAction* mProblem_Rename;
-    QAction* mProblem_GotoUrl;
+    //action for problem
+    QAction * mProblem_OpenSource;
+    QAction * mProblem_Properties;
+    QAction * mProblem_Rename;
+    QAction * mProblem_GotoUrl;
 
-    // action for problem cases
-    QAction* mProblem_AddCase;
-    QAction* mProblem_RemoveCases;
-    QAction* mProblem_OpenAnswer;
-    QAction* mProblem_CaseValidationOptions;
 
-    QAction* mProblem_RunCurrentCase;
-    QAction* mProblem_RunAllCases;
-    QAction* mProblem_batchSetCases;
+    //action for problem cases
+    QAction * mProblem_AddCase;
+    QAction * mProblem_RemoveCases;
+    QAction * mProblem_OpenAnswer;
+    QAction * mProblem_CaseValidationOptions;
 
-    // action for tools output
-    QAction* mToolsOutput_Clear;
-    QAction* mToolsOutput_SelectAll;
-    QAction* mToolsOutput_Copy;
+    QAction * mProblem_RunCurrentCase;
+    QAction * mProblem_RunAllCases;
+    QAction * mProblem_batchSetCases;
 
-    QSortFilterProxyModel* mProjectProxyModel;
+    //action for tools output
+    QAction * mToolsOutput_Clear;
+    QAction * mToolsOutput_SelectAll;
+    QAction * mToolsOutput_Copy;
 
+    QSortFilterProxyModel *mProjectProxyModel;
+    
     // QWidget interface
 protected:
-    void closeEvent(QCloseEvent* event) override;
+    void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent* event) override;
-    void hideEvent(QHideEvent* event) override;
+    void hideEvent(QHideEvent *event) override;
+
 
     // QObject interface
 public:
-    bool event(QEvent* event) override;
+    bool event(QEvent *event) override;
 
     bool isClosingAll() const;
     bool isQuitting() const;
-    const std::shared_ptr<VisitHistoryManager>& visitHistoryManager() const;
+    const std::shared_ptr<VisitHistoryManager> &visitHistoryManager() const;
     bool closingProject() const;
     bool openingFiles() const;
     bool openingProject() const;
+
 };
 
 extern MainWindow* pMainWindow;

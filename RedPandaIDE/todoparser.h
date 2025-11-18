@@ -39,36 +39,12 @@ struct TodoItem {
 
 using PTodoItem = std::shared_ptr<TodoItem>;
 
-/**
- * @brief Model for managing TODO items in a Qt view
- * 
- * This class extends QAbstractListModel to provide a model for displaying
- * TODO items found in source code. It manages two separate lists of items:
- * one for project-wide TODOs and one for general TODOs.
- */
-class TodoModel : public QAbstractListModel
-{
+class TodoModel : public QAbstractListModel {
     Q_OBJECT
 public:
-    /**
-     * @brief Constructor
-     * @param parent Parent object
-     */
-    explicit TodoModel(QObject* parent = nullptr);
-    
-    /**
-     * @brief Add a new TODO item to the model
-     * @param filename Name of the file containing the TODO
-     * @param lineNo Line number of the TODO
-     * @param ch Character position of the TODO
-     * @param line Content of the line containing the TODO
-     */
-    void addItem(const QString& filename, int lineNo, int ch, const QString& line);
-    
-    /**
-     * @brief Remove all TODO items associated with a specific file
-     * @param filename Name of the file whose TODO items should be removed
-     */
+    explicit TodoModel(QObject* parent=nullptr);
+    void addItem(const QString& filename, int lineNo,
+                 int ch, const QString& line);
     void removeTodosForFile(const QString& filename);
     
     /**
@@ -88,69 +64,26 @@ public:
      * @return Shared pointer to the TODO item, or null if index is invalid
      */
     PTodoItem getItem(const QModelIndex& index);
-
-    /**
-     * @brief Get the number of rows in the model
-     * @param parent Parent index (not used for list models)
-     * @return Number of TODO items in the current list
-     */
-    int rowCount(const QModelIndex& parent) const override;
-    
-    /**
-     * @brief Get data for a specific model index
-     * @param index Model index to retrieve data for
-     * @param role Data role to retrieve
-     * @return Data for the specified index and role
-     */
-    QVariant data(const QModelIndex& index, int role) const override;
-    
-    /**
-     * @brief Get header data for a specific section
-     * @param section Section number
-     * @param orientation Header orientation
-     * @param role Data role to retrieve
-     * @return Header data for the specified section
-     */
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    
-    /**
-     * @brief Get the number of columns in the model
-     * @param parent Parent index (not used for list models)
-     * @return Number of columns (always 3 for filename, line number, and content)
-     */
-    int columnCount(const QModelIndex& parent) const override;
-    
-    /**
-     * @brief Check if the model is currently showing project TODO items
-     * @return True if showing project TODO items, false otherwise
-     */
-    bool isForProject() const;
-    
-    /**
-     * @brief Set whether the model should show project TODO items
-     * @param newIsForProject True to show project TODO items, false for general TODO items
-     */
-    void setIsForProject(bool newIsForProject);
-
 private:
-    QList<PTodoItem>& getItems(bool forProject);
-    const QList<PTodoItem>& getConstItems(bool forProject) const;
-
+    QList<PTodoItem> &getItems(bool forProject);
+    const QList<PTodoItem> &getConstItems(bool forProject) const;
 private:
     QList<PTodoItem> mItems;
     QList<PTodoItem> mProjectItems;
     bool mIsForProject;
 
     // QAbstractItemModel interface
+public:
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    int columnCount(const QModelIndex &parent) const override;
+    bool isForProject() const;
+    void setIsForProject(bool newIsForProject);
+
 };
 
-/**
- * @brief Thread for parsing TODO items in source files
- * 
- * This class runs in a separate thread to parse source files and identify
- * TODO and FIXME comments without blocking the UI.
- */
-class TodoThread : public QThread
+class TodoThread: public QThread
 {
     Q_OBJECT
 public:
@@ -193,7 +126,6 @@ signals:
      * @brief Emitted when parsing is finished
      */
     void parseFinished();
-
 private:
     /**
      * @brief Parse a single file
@@ -204,13 +136,7 @@ private:
      * @brief Parse multiple files
      */
     void parseFiles();
-    
-    /**
-     * @brief Parse a specific file for TODO items
-     * @param filename Name of the file to parse
-     */
     void doParseFile(const QString& filename);
-
 private:
     QString mFilename;
     QStringList mFiles;
@@ -236,23 +162,8 @@ class TodoParser : public QObject
 {
     Q_OBJECT
 public:
-    /**
-     * @brief Constructor
-     * @param parent Parent object
-     */
-    explicit TodoParser(QObject* parent = nullptr);
-    
-    /**
-     * @brief Parse a single file for TODO items
-     * @param filename Name of the file to parse
-     * @param isForProject Whether this is for a project TODO list
-     */
-    void parseFile(const QString& filename, bool isForProject);
-    
-    /**
-     * @brief Parse multiple files for TODO items
-     * @param files List of filenames to parse
-     */
+    explicit TodoParser(QObject *parent = nullptr);
+    void parseFile(const QString& filename,bool isForProject);
     void parseFiles(const QStringList& files);
     
     /**

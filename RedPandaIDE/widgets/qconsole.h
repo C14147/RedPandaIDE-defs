@@ -27,7 +27,9 @@ struct ConsoleLine {
     int maxColumns;
 };
 
-enum class ConsoleCaretType { ctVerticalLine, ctHorizontalLine, ctBlock, ctHalfBlock };
+enum class ConsoleCaretType {
+    ctVerticalLine,ctHorizontalLine,ctBlock,ctHalfBlock
+};
 
 using PConsoleLine = std::shared_ptr<ConsoleLine>;
 
@@ -51,14 +53,11 @@ struct LineChar {
     int line;
 
     LineChar() = default;
-    constexpr LineChar(qsizetype ch_, qsizetype line_) : ch(ch_), line(line_)
-    {
-    }
+    constexpr LineChar(qsizetype ch_, qsizetype line_) : ch(ch_), line(line_) {}
 };
 
 class QConsole;
-class ConsoleLines : public QObject
-{
+class ConsoleLines : public QObject{
     Q_OBJECT
 public:
     explicit ConsoleLines(QConsole* console);
@@ -67,7 +66,7 @@ public:
     void changeLastLine(const QString& newLine);
     QString getLastLine();
     QString getLine(int line);
-    QChar getChar(int line, int ch);
+    QChar getChar(int line,int ch);
     QChar getChar(const LineChar& lineChar);
     /**
      * @brief getRows
@@ -78,7 +77,7 @@ public:
     QStringList getRows(int startRow, int endRow);
 
     LineChar rowColumnToLineChar(const RowColumn& rowColumn);
-    LineChar rowColumnToLineChar(int row, int column);
+    LineChar rowColumnToLineChar(int row ,int column);
     RowColumn lineCharToRowColumn(const LineChar& lineChar);
     RowColumn lineCharToRowColumn(int line, int ch);
     int rows() const;
@@ -98,10 +97,8 @@ signals:
     void rowsAdded(int rowCount);
     void lastRowsRemoved(int rowCount);
     void lastRowsChanged(int rowCount);
-
 private:
     int breakLine(const QString& line, QStringList& fragments);
-
 private:
     ConsoleLineList mLines;
     int mRows;
@@ -111,6 +108,7 @@ private:
     QConsole* mConsole;
     int mMaxLines;
 };
+
 
 class QConsole : public QAbstractScrollArea
 {
@@ -128,7 +126,7 @@ public:
     int charColumns(QChar ch, int columnsBefore) const;
 
     void invalidate();
-    void invalidateRows(int startRow, int endRow);
+    void invalidateRows(int startRow,int endRow);
     void invalidateRect(const QRect& rect);
 
     void addLine(const QString& line);
@@ -144,7 +142,6 @@ public:
 
 signals:
     void commandInput(const QString& command);
-
 private:
     ConsoleLines mContents;
     QStringList mCommandHistory;
@@ -152,7 +149,7 @@ private:
     int mHistoryIndex;
     QString mCommand;
     QString mCurrentEditableLine;
-    //    bool mIndex;
+//    bool mIndex;
     int mRowHeight;
     int mTopRow; // 1-based
     int mRowsInWindow;
@@ -174,7 +171,6 @@ private:
     int mBlinkStatus;
     QTimer* mScrollTimer;
     int mScrollDeltaY;
-
 private:
     void fontChanged();
     void recalcCharExtent();
@@ -188,7 +184,7 @@ private:
     void setTopRow(int value);
     int maxScrollHeight();
     void updateScrollbars();
-    void paintRows(QPainter& painter, int row1, int row2);
+    void paintRows(QPainter& painter, int row1,int row2);
     void ensureCaretVisible();
     void showCaret();
     void hideCaret();
@@ -197,7 +193,7 @@ private:
     RowColumn caretRowColumn();
     QPoint rowColumnToPixels(const RowColumn& rowColumn);
     QRect getCaretRect();
-    void paintCaret(QPainter& painter, const QRect rcClip);
+    void paintCaret(QPainter &painter, const QRect rcClip);
     void textInputed(const QString& text);
     void loadCommandFromHistory();
     LineChar selectionBegin();
@@ -207,8 +203,9 @@ private:
     QString removeSelection();
     bool hasSelection();
     int computeScrollY(int y);
-    RowColumn pixelsToNearestRowColumn(int x, int y);
+    RowColumn pixelsToNearestRowColumn(int x,int y);
     QString lineBreak();
+
 
 private slots:
     void doScrolled();
@@ -220,27 +217,29 @@ private slots:
 
     // QWidget interface
 protected:
-    void mousePressEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void focusInEvent(QFocusEvent* event) override;
-    void focusOutEvent(QFocusEvent* event) override;
-    void paintEvent(QPaintEvent* event) override;
-    bool event(QEvent* event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    bool event(QEvent *event) override;
+
 
     // QWidget interface
 protected:
-    void resizeEvent(QResizeEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     // QObject interface
 protected:
-    void timerEvent(QTimerEvent* event) override;
+    void timerEvent(QTimerEvent *event) override;
 
     // QWidget interface
 protected:
-    void inputMethodEvent(QInputMethodEvent* event) override;
-    void wheelEvent(QWheelEvent* event) override;
+    void inputMethodEvent(QInputMethodEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 };
+
 
 #endif // QCONSOLE_H

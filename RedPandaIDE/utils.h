@@ -43,31 +43,46 @@
 using SimpleIni = CSimpleIniA;
 using PSimpleIni = std::shared_ptr<SimpleIni>;
 
-enum class FileType {
+enum class FileType{
     None,
-    ATTASM,                // AT&T assembler source file (.s)
-    INTELASM,              // Intel assembler source file (.s)
-    LUA,                   // lua file (.lua)
-    CSource,               // c source file (.c)
-    CppSource,             // c++ source file (.cpp)
-    CCppHeader,            // c header (.h)
-    PreprocessedSource,    //(.p)
-    GIMPLE,                // gcc gimple file (.gimple)
+    ATTASM, // deprecated: AT&T Style GNU assembler source file (.s)
+    INTELASM, // deprecated: Intel Style GNU assembler source file (.s)
+    LUA, // lua file (.lua)
+    CSource, // c source file (.c)
+    CppSource, // c++ source file (.cpp)
+    CCppHeader, // c header (.h)
+    PreprocessedSource, //(.p)
+    GIMPLE, // gcc gimple file (.gimple)
     WindowsResourceSource, // resource source (.res)
-    Project,               // RedPandaIDE Project (.dev)
-    Text,                  // text file
+    Project, //RedPandaIDE Project (.dev)
+    Text, // text file
     FragmentShader,
     VerticeShader,
     ModuleDef, // Windows Module Definition
     MakeFile,
     Other, // any others
+    NASM, // NASM Files
+    GAS, //GAS Files
 };
 
-enum class SearchFileScope { currentFile, wholeProject, openedFiles, Folder };
+enum class SearchFileScope {
+    currentFile,
+    wholeProject,
+    openedFiles,
+    Folder
+};
 
-enum AutoSaveTarget { astCurrentFile, astAllOpennedFiles, astAllProjectFiles };
+enum AutoSaveTarget {
+    astCurrentFile,
+    astAllOpennedFiles,
+    astAllProjectFiles
+};
 
-enum AutoSaveStrategy { assOverwrite, assAppendUnixTimestamp, assAppendFormatedTimeStamp };
+enum AutoSaveStrategy {
+    assOverwrite,
+    assAppendUnixTimestamp,
+    assAppendFormatedTimeStamp
+};
 
 enum FormatterBraceStyle {
     fbsDefault,
@@ -89,24 +104,40 @@ enum FormatterBraceStyle {
     fbsLisp
 };
 
-enum FormatterOperatorAlign { foaNone, foaType, foaMiddle, foaName };
+enum FormatterOperatorAlign {
+    foaNone,
+    foaType,
+    foaMiddle,
+    foaName
+};
 
-enum FormatterIndentType { fitSpace, fitTab };
+enum FormatterIndentType {
+    fitSpace,
+    fitTab
+};
 
-enum class SplitProcessCommandQuoteType { None, Single, Double };
+enum class SplitProcessCommandQuoteType {
+    None,
+    Single,
+    Double
+};
 
-enum class ProblemCaseValidateType { Exact, IgnoreLeadingTrailingSpaces, IgnoreSpaces };
+enum class ProblemCaseValidateType {
+    Exact,
+    IgnoreLeadingTrailingSpaces,
+    IgnoreSpaces
+};
 
 struct NonExclusiveTemporaryFileOwner {
     const QString filename;
 
     // take ownership
-    explicit NonExclusiveTemporaryFileOwner(std::unique_ptr<QTemporaryFile>& tempFile);
+    explicit NonExclusiveTemporaryFileOwner(std::unique_ptr<QTemporaryFile> &tempFile);
 
-    NonExclusiveTemporaryFileOwner(const NonExclusiveTemporaryFileOwner&) = delete;
-    NonExclusiveTemporaryFileOwner(NonExclusiveTemporaryFileOwner&&) = delete;
-    NonExclusiveTemporaryFileOwner& operator=(const NonExclusiveTemporaryFileOwner&) = delete;
-    NonExclusiveTemporaryFileOwner& operator=(NonExclusiveTemporaryFileOwner&&) = delete;
+    NonExclusiveTemporaryFileOwner(const NonExclusiveTemporaryFileOwner &) = delete;
+    NonExclusiveTemporaryFileOwner(NonExclusiveTemporaryFileOwner &&) = delete;
+    NonExclusiveTemporaryFileOwner& operator=(const NonExclusiveTemporaryFileOwner &) = delete;
+    NonExclusiveTemporaryFileOwner& operator=(NonExclusiveTemporaryFileOwner &&) = delete;
     ~NonExclusiveTemporaryFileOwner();
 };
 
@@ -115,22 +146,17 @@ using PNonExclusiveTemporaryFileOwner = std::unique_ptr<NonExclusiveTemporaryFil
 FileType getFileType(const QString& filename);
 QString fileTypeToName(FileType fileType);
 FileType nameToFileType(const QString& name);
-constexpr bool isASMSourceFile(FileType fileType)
-{
-    return fileType == FileType::ATTASM || fileType == FileType::INTELASM;
+constexpr bool isASMSourceFile(FileType fileType) {
+    return fileType == FileType::NASM || fileType == FileType::GAS;
 }
-constexpr bool isC_CPPSourceFile(FileType fileType)
-{
+constexpr bool isC_CPPSourceFile(FileType fileType) {
     return fileType == FileType::CSource || fileType == FileType::CppSource;
 }
-constexpr bool isC_CPPHeaderFile(FileType fileType)
-{
+constexpr bool isC_CPPHeaderFile(FileType fileType) {
     return fileType == FileType::CCppHeader;
 }
-constexpr bool isC_CPP_ASMSourceFile(FileType fileType)
-{
-    return fileType == FileType::CSource || fileType == FileType::CppSource ||
-           fileType == FileType::ATTASM || fileType == FileType::INTELASM;
+constexpr bool isC_CPP_ASMSourceFile(FileType fileType) {
+    return isC_CPPSourceFile(fileType) || isASMSourceFile(fileType);
 }
 
 bool programIsWin32GuiApp(const QString& filename);
@@ -140,56 +166,59 @@ QString parseMacros(const QString& s, const QMap<QString, QString>& variables);
 QMap<QString, QString> devCppMacroVariables();
 
 class CppParser;
-void resetCppParser(std::shared_ptr<CppParser> parser, int compilerSetIndex = -1);
+void resetCppParser(std::shared_ptr<CppParser> parser, int compilerSetIndex=-1);
 
 int getNewFileNumber();
 
-struct ProcessOutput {
+struct ProcessOutput
+{
     QByteArray standardOutput;
     QByteArray standardError;
     QString errorMessage;
 };
 
-ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir,
-                              const QStringList& arguments,
-                              const QByteArray& inputContent = QByteArray(),
-                              bool separateStderr = false, bool inheritEnvironment = false,
-                              const QProcessEnvironment& env = QProcessEnvironment());
+ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir, const QStringList& arguments,
+                           const QByteArray& inputContent = QByteArray(),
+                           bool separateStderr = false,
+                           bool inheritEnvironment = false,
+                           const QProcessEnvironment& env = QProcessEnvironment() );
 
 void openFileFolderInExplorer(const QString& path);
 
-void executeFile(const QString& fileName, const QStringList& params, const QString& workingDir,
+void executeFile(const QString& fileName,
+                 const QStringList& params,
+                 const QString& workingDir,
                  const QString& tempFile);
 
 #ifdef Q_OS_WIN
 bool isGreenEdition();
 #else
-constexpr bool isGreenEdition()
-{
-    return false;
-}
+constexpr bool isGreenEdition() { return false; }
 #endif
 
 #ifdef Q_OS_WIN
 bool readRegistry(HKEY key, const QString& subKey, const QString& name, QString& value);
 #endif
 
-qulonglong stringToHex(const QString& str, bool& isOk);
+qulonglong stringToHex(const QString& str, bool &isOk);
 
-bool findComplement(const QString& s, const QChar& fromToken, const QChar& toToken, int& curPos,
-                    int increment);
+bool findComplement(const QString& s,
+                       const QChar& fromToken,
+                       const QChar& toToken,
+                       int& curPos,
+                       int increment);
 
-bool haveGoodContrast(const QColor& c1, const QColor& c2);
+bool haveGoodContrast(const QColor& c1, const QColor &c2);
 
 QByteArray getHTTPBody(const QByteArray& content);
 
 QString getSizeString(int size);
 
 class QComboBox;
-void setComboTextAndHistory(QComboBox* cb, const QString& newText, QStringList& historyList);
-void updateComboHistory(QStringList& historyList, const QString& newKey);
+void setComboTextAndHistory(QComboBox *cb, const QString& newText, QStringList &historyList);
+void updateComboHistory(QStringList &historyList, const QString &newKey);
 
-QColor alphaBlend(const QColor& lower, const QColor& upper);
+QColor alphaBlend(const QColor &lower, const QColor &upper);
 
 QStringList getExecutableSearchPaths();
 
@@ -198,42 +227,39 @@ QStringList platformCommandForTerminalArgsPreview();
 QString appArch();
 QString osArch();
 
-QString byteArrayToString(const QByteArray& content, bool isUTF8);
+QString byteArrayToString(const QByteArray &content, bool isUTF8);
 QByteArray stringToByteArray(const QString& content, bool isUTF8);
 
 #ifdef _MSC_VER
 #define __builtin_unreachable() (__assume(0))
 #endif
 
-std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner>
-wrapCommandForTerminalEmulator(const QString& terminal, const QStringList& argsPattern,
-                               const QStringList& payloadArgsWithArgv0);
+std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner> wrapCommandForTerminalEmulator(const QString &terminal, const QStringList &argsPattern, const QStringList &payloadArgsWithArgv0);
 
-std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner>
-wrapCommandForTerminalEmulator(const QString& terminal, const QString& argsPattern,
-                               const QStringList& payloadArgsWithArgv0);
+std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner> wrapCommandForTerminalEmulator(const QString &terminal, const QString &argsPattern, const QStringList &payloadArgsWithArgv0);
 
 struct ExternalResource {
     ExternalResource();
     ~ExternalResource();
 };
 
-template <typename T, typename D> std::unique_ptr<T, D> resourcePointer(T* pointer, D deleter)
+template <typename T, typename D>
+std::unique_ptr<T, D> resourcePointer(T *pointer, D deleter)
 {
     return {pointer, deleter};
 }
 
 #ifdef Q_OS_WINDOWS
-bool applicationHasUtf8Manifest(const wchar_t* path);
+bool applicationHasUtf8Manifest(const wchar_t *path);
 bool osSupportsUtf8Manifest();
-bool applicationIsUtf8(const QString& path);
+bool applicationIsUtf8(const QString &path);
 #endif
 
 /*
- * In Qt6, image files read directly from files may appear blurry.
- * This function will perform specific operations on image reading
- * to restore image clarity.
- */
+* In Qt6, image files read directly from files may appear blurry.
+* This function will perform specific operations on image reading
+* to restore image clarity.
+*/
 QPixmap HDPixmap(QPixmap pix, int w, int h);
 QPixmap HDPixmap(QPixmap pix);
 QPixmap HDPixmap(QString picPath);
@@ -251,7 +277,7 @@ public:
     void showEvent(QShowEvent *event);
 
 protected:
-    void changeEvent(QEvent* event) override;
+    void changeEvent(QEvent *event) override;
 
 private:
     QVBoxLayout* verticalLayout;

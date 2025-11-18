@@ -22,9 +22,9 @@
 
 // Avoid using deprecated functions in Qt6
 #if QT_VERSION_MAJOR == 6
-#define QCheckBox_stateChanged QCheckBox::checkStateChanged
+#  define QCheckBox_stateChanged QCheckBox::checkStateChanged
 #else
-#define QCheckBox_stateChanged QCheckBox::stateChanged
+#  define QCheckBox_stateChanged QCheckBox::stateChanged
 #endif
 
 class QAbstractItemView;
@@ -32,7 +32,7 @@ class SettingsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SettingsWidget(const QString& name, const QString& group, QWidget* parent = nullptr);
+    explicit SettingsWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
 
     virtual void init();
 
@@ -49,8 +49,7 @@ protected:
     virtual void onLoaded();
     void connectAbstractItemView(QAbstractItemView* pView);
     void disconnectAbstractItemView(QAbstractItemView* pView);
-    virtual void updateIcons(const QSize& size);
-
+    virtual void updateIcons(const QSize &size) ;
 public:
     const QString& group();
     const QString& name();
@@ -60,8 +59,8 @@ public:
 public slots:
     void setSettingsChanged();
     void clearSettingsChanged();
-
 private:
+
 private:
     bool mSettingsChanged;
     QString mGroup;
@@ -69,7 +68,7 @@ private:
 
     // QWidget interface
 protected:
-    void showEvent(QShowEvent* event) override;
+    void showEvent(QShowEvent *event) override;
 };
 
 #endif // SETTINGSWIDGET_H

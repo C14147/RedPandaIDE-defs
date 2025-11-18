@@ -24,27 +24,20 @@
 #include <QCheckBox>
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
-#include <QCheckBox>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#define STATE_CHANGED_SIGNAL &QCheckBox::checkStateChanged
-#else
-#define STATE_CHANGED_SIGNAL &QCheckBox::stateChanged
-#endif
 
 namespace Ui {
 class EditorColorSchemeWidget;
 }
 
-class ColorSchemeItemDelegate : public QStyledItemDelegate
-{
+class ColorSchemeItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 public:
-    ColorSchemeItemDelegate(QObject* parent = nullptr);
+    ColorSchemeItemDelegate(QObject *parent=nullptr);
+
 
     // QStyledItemDelegate interface
 protected:
-    void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const override;
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override;
 };
 
 class EditorColorSchemeWidget : public SettingsWidget
@@ -52,9 +45,10 @@ class EditorColorSchemeWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    enum { NameRole = Qt::UserRole + 1 };
-    explicit EditorColorSchemeWidget(const QString& name, const QString& group,
-                                     QWidget* parent = nullptr);
+    enum {
+        NameRole = Qt::UserRole+1
+    };
+    explicit EditorColorSchemeWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~EditorColorSchemeWidget();
 
 public slots:
@@ -74,14 +68,14 @@ private:
     void setCurrentSchemeModified();
 
 private:
-    Ui::EditorColorSchemeWidget* ui;
+    Ui::EditorColorSchemeWidget *ui;
     QStandardItemModel mDefinesModel;
     QFont mDefaultSchemeComboFont;
     QFont mModifiedSchemeComboFont;
     QSet<QString> mModifiedSchemes;
     QMenu mMenu;
-    QStyledItemDelegate* mItemDelegate;
-    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>> mStatementColors;
+    QStyledItemDelegate *mItemDelegate;
+    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > mStatementColors;
 
     // SettingsWidget interface
 protected:

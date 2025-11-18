@@ -25,17 +25,14 @@ namespace Ui {
 class NewClassDialog;
 }
 
-class NewClassCandidatesModel : public QAbstractListModel
-{
+class NewClassCandidatesModel: public QAbstractListModel {
     Q_OBJECT
 public:
     explicit NewClassCandidatesModel(PCppParser parser);
     PStatement getCandidate(int row) const;
-
 private:
     void fillClasses();
     void fillClassesInNamespace(PStatement ns);
-
 private:
     PCppParser mParser;
     QVector<PStatement> mCandidates;
@@ -43,8 +40,8 @@ private:
 
     // QAbstractItemModel interface
 public:
-    int rowCount(const QModelIndex& parent) const override;
-    QVariant data(const QModelIndex& index, int role) const override;
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
 };
 
 class NewClassDialog : public QDialog
@@ -52,7 +49,7 @@ class NewClassDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NewClassDialog(PCppParser parser, QWidget* parent = nullptr);
+    explicit NewClassDialog(PCppParser parser, QWidget *parent = nullptr);
     ~NewClassDialog();
 
     QString className() const;
@@ -69,19 +66,18 @@ private slots:
 
     void on_btnBrowsePath_clicked();
 
-    void on_txtClassName_textChanged(const QString& arg1);
+    void on_txtClassName_textChanged(const QString &arg1);
 
 private:
-    Ui::NewClassDialog* ui;
+    Ui::NewClassDialog *ui;
     QList<PStatement> mClasses;
     NewClassCandidatesModel mModel;
-
 private:
     void onUpdateIcons();
 
     // QWidget interface
 protected:
-    void closeEvent(QCloseEvent* event) override;
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // NEWCLASSDIALOG_H

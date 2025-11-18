@@ -21,19 +21,25 @@
 #include <QWidget>
 #include "compiler/compilerinfo.h"
 
-enum class ProjectModelType { FileSystem, Custom };
-
-enum class ProjectClassBrowserType { CurrentFile, WholeProject };
-
-enum class ProjectType {
-    GUI = 0,
-    Console = 1,
-    StaticLib = 2,
-    DynamicLib = 3,
-    MicroController = 4,
+enum class ProjectModelType {
+    FileSystem,
+    Custom
 };
 
-struct ProjectVersionInfo {
+enum class ProjectClassBrowserType {
+    CurrentFile,
+    WholeProject
+};
+
+enum class ProjectType {
+    GUI=0,
+    Console=1,
+    StaticLib=2,
+    DynamicLib=3,
+    MicroController=4,
+};
+
+struct ProjectVersionInfo{
     explicit ProjectVersionInfo();
     int major;
     int minor;
@@ -54,7 +60,7 @@ struct ProjectVersionInfo {
     bool syncProduct;
 };
 
-struct ProjectOptions {
+struct ProjectOptions{
     explicit ProjectOptions();
     ProjectType type;
     int version;
@@ -84,7 +90,7 @@ struct ProjectOptions {
     bool includeVersionInfo;
     bool supportXPThemes;
     int compilerSet;
-    QMap<QString, QString> compilerOptions;
+    QMap<QString,QString> compilerOptions;
     ProjectVersionInfo versionInfo;
     QString cmdLineArgs;
     bool staticLink;

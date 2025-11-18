@@ -29,14 +29,12 @@ class EnvironmentFoldersWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    explicit EnvironmentFoldersWidget(const QString& name, const QString& group,
-                                      QWidget* parent = nullptr);
+    explicit EnvironmentFoldersWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~EnvironmentFoldersWidget();
 signals:
     void shouldQuitApp();
-
 private:
-    Ui::EnvironmentFoldersWidget* ui;
+    Ui::EnvironmentFoldersWidget *ui;
 
     // SettingsWidget interface
 protected:
@@ -52,7 +50,7 @@ private slots:
     void on_btnOpenThemeFolderInFileBrowser_clicked();
 
 protected:
-    void updateIcons(const QSize& size) override;
+    void updateIcons(const QSize &size) override;
 };
 
 #endif // ENVIRONMENTFOLDERSWIDGET_H

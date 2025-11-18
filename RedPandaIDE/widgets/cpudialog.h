@@ -29,29 +29,26 @@ class CPUDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CPUDialog(QWidget* parent = nullptr);
+    explicit CPUDialog(QWidget *parent = nullptr);
     ~CPUDialog();
     void updateInfo();
     void updateButtonStates(bool enable);
 public slots:
     void updateDPI(float dpi);
-    void setDisassembly(const QString& file, const QString& funcName, const QStringList& linesconst,
-                        const QList<PTrace>& traces);
+    void setDisassembly(const QString& file, const QString& funcName,const QStringList& linesconst,const QList<PTrace>& traces);
     void resetEditorFont(float dpi);
 signals:
     void closed();
-
 private:
     void sendSyntaxCommand();
     void updateSyntaxer();
-
 private:
-    Ui::CPUDialog* ui;
+    Ui::CPUDialog *ui;
     bool mInited;
     bool mSetting;
     // QWidget interface
 protected:
-    void closeEvent(QCloseEvent* event) override;
+    void closeEvent(QCloseEvent *event) override;
 private slots:
     void on_rdIntel_toggled(bool checked);
     void on_rdATT_toggled(bool checked);
@@ -64,7 +61,7 @@ private slots:
     void on_cbCallStack_currentIndexChanged(int index);
 
 protected:
-    void showEvent(QShowEvent* event) override;
+    void showEvent(QShowEvent *event) override;
 };
 
 #endif // CPUDIALOG_H

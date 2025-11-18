@@ -50,9 +50,7 @@ public:
     QString pluginVersion;
 
 public:
-    virtual ~IRedPandaPlugin()
-    {
-    }
+    virtual ~IRedPandaPlugin() {}
 
     /**
      * @brief Initialize the plugin

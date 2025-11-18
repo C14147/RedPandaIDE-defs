@@ -26,14 +26,13 @@ namespace AddOn {
 namespace Lua {
 
 // simple, stateless Lua executor
-class SimpleExecutor
-{
+class SimpleExecutor {
 protected:
-    SimpleExecutor(const QString& kind, int major, int minor, const QList<QString>& apis);
+    SimpleExecutor(const QString &kind, int major, int minor, const QList<QString> &apis);
 
-    bool apiVersionCheck(const QJsonObject& addonApi);
+    bool apiVersionCheck(const QJsonObject &addonApi);
 
-    QJsonValue runScript(const QByteArray& script, const QString& name,
+    QJsonValue runScript(const QByteArray &script, const QString &name,
                          std::chrono::microseconds timeLimit);
 
 private:
@@ -43,21 +42,19 @@ private:
     QStringList mApis;
 };
 
-class ThemeExecutor : private SimpleExecutor
-{
+class ThemeExecutor : private SimpleExecutor {
 public:
     ThemeExecutor();
-    QJsonObject operator()(const QByteArray& script, const QString& name);
+    QJsonObject operator()(const QByteArray &script, const QString &name);
 };
 
-class CompilerHintExecutor : private SimpleExecutor
-{
+class CompilerHintExecutor : private SimpleExecutor {
 public:
     CompilerHintExecutor();
-    QJsonObject operator()(const QByteArray& script);
+    QJsonObject operator()(const QByteArray &script);
 };
 
 } // Namespace Lua
-} // namespace AddOn
+} // Namespace Addon
 
 #endif // ADDON_LUA_EXECUTOR_H

@@ -42,118 +42,72 @@ class QTemporaryFile;
 
 using PTabStop = std::shared_ptr<TabStop>;
 
-/**
- * @brief Code editor component based on QSynEdit
- * 
- * This class extends QSynEdit to provide specialized functionality for 
- * source code editing, including syntax highlighting, code completion,
- * bracket matching, and integration with the IDE's features.
- * 
- * The Editor class handles:
- * - Syntax highlighting and color schemes
- * - Code completion and header completion
- * - Bracket and parenthesis matching
- * - Code folding
- * - Bookmarks and breakpoints
- * - Integration with project and compiler systems
- */
 class Editor : public QSynedit::QSynEdit
 {
     Q_OBJECT
 public:
-    /**
-     * @brief Types of last symbol processed for context-aware operations
-     * 
-     * Used to determine context for code completion and other language-aware features.
-     */
     enum class LastSymbolType {
-        Identifier,                    //!< Regular identifier
-        ScopeResolutionOperator,       //!< '::' operator
-        ObjectMemberOperator,          //!< '.' operator
-        PointerMemberOperator,         //!< '->' operator
-        PointerToMemberOfObjectOperator, //!< '.*' operator
-        PointerToMemberOfPointerOperator, //!< '->*' operator
-        MatchingBracket,               //!< Bracket matching in progress
-        BracketMatched,                //!< Bracket matching completed
-        MatchingParenthesis,           //!< Parenthesis matching in progress
-        ParenthesisMatched,            //!< Parenthesis matching completed
-        TildeSign,                     //!< '~' character
-        AsteriskSign,                  //!< '*' character
-        AmpersandSign,                 //!< '&' character
-        MatchingAngleQuotation,        //!< Matching angle brackets or quotation marks
-        AngleQuotationMatched,         //!< Angle brackets or quotation marks matched
-        None                           //!< No specific symbol type
+        Identifier,
+        ScopeResolutionOperator, //'::'
+        ObjectMemberOperator, //'.'
+        PointerMemberOperator, //'->'
+        PointerToMemberOfObjectOperator, //'.*'
+        PointerToMemberOfPointerOperator, //'->*'
+        MatchingBracket,
+        BracketMatched,
+        MatchingParenthesis,
+        ParenthesisMatched,
+        TildeSign,    // '~'
+        AsteriskSign, // '*'
+        AmpersandSign, // '&'
+        MatchingAngleQuotation,
+        AngleQuotationMatched,
+        None
     };
 
-    /**
-     * @brief Margin numbers for the editor gutter
-     * 
-     * Defines the different margin areas in the editor's gutter.
-     */
     enum MarginNumber {
-        LineNumberMargin = 0,          //!< Line numbers margin
-        MarkerMargin = 1,              //!< Marker margin (breakpoints, errors)
-        FoldMargin = 2,                //!< Code folding margin
+        LineNumberMargin = 0,
+        MarkerMargin = 1,
+        FoldMargin = 2,
     };
 
-    /**
-     * @brief Marker numbers for the editor
-     * 
-     * Defines different types of markers that can be displayed in the editor.
-     */
-    enum MarkerNumber { 
-        BreakpointMarker,              //!< Breakpoint marker
-        ErrorMarker,                   //!< Error marker
-        WarningMarker                  //!< Warning marker
+    enum MarkerNumber {
+        BreakpointMarker,
+        ErrorMarker,
+        WarningMarker
     };
 
-    /**
-     * @brief Status of quotation parsing
-     * 
-     * Used to track the state when parsing strings and character literals.
-     */
     enum class QuoteStatus {
-        NotQuote,                      //!< Not in a quotation
-        SingleQuote,                   //!< In a single-quoted string
-        SingleQuoteEscape,             //!< In a single-quoted string after escape character
-        DoubleQuote,                   //!< In a double-quoted string
-        DoubleQuoteEscape,             //!< In a double-quoted string after escape character
-        RawString,                     //!< In a raw string literal
-        RawStringNoEscape,             //!< In a raw string with no escape sequences
-        RawStringEnd                   //!< At the end of a raw string
+        NotQuote,
+        SingleQuote,
+        SingleQuoteEscape,
+        DoubleQuote,
+        DoubleQuoteEscape,
+        RawString,
+        RawStringNoEscape,
+        RawStringEnd
     };
 
-    /**
-     * @brief Purpose of word operations
-     * 
-     * Defines the context for word-based operations like completion and evaluation.
-     */
     enum class WordPurpose {
-        wpCompletion,                  //!< Code completion context
-        wpEvaluation,                  //!< Expression evaluation context
-        wpHeaderCompletion,            //!< Header completion context
-        wpHeaderCompletionStart,       //!< Starting header completion
-        wpDirective,                   //!< Preprocessor directive context
-        wpJavadoc,                     //!< Javadoc comment context
-        wpInformation,                 //!< Information gathering context
-        wpATTASMKeywords,              //!< AT&T assembly keywords context
-        wpNASMPreprocessDirective,     //!< NASM preprocessor directive context
-        wpKeywords                     //!< Keywords context
+        wpCompletion, // walk backwards over words, array, functions, parents, no forward movement
+        wpEvaluation, // walk backwards over words, array, functions, parents, forwards over words, array
+        wpHeaderCompletion, // walk backwards over path
+        wpHeaderCompletionStart, // walk backwards over path, including start '<' or '"'
+        wpDirective, // preprocessor
+        wpJavadoc, //javadoc
+        wpInformation, // walk backwards over words, array, functions, parents, forwards over words
+        wpATTASMKeywords,
+        wpKeywords
     };
 
-    /**
-     * @brief Types of tooltips that can be displayed
-     * 
-     * Defines different types of information that can be shown in tooltips.
-     */
     enum class TipType {
-        Preprocessor, // cursor hovers above preprocessor line
-        Identifier,   // cursor hovers above identifier
-        Selection,    // cursor hovers above selection
-        Keyword,
-        Number,
-        None, // mouseover not allowed
-        Error // Cursor hovers above error line/item;
+      Include, // cursor hovers above include
+      Identifier, // cursor hovers above identifier
+      Selection, // cursor hovers above selection
+      Keyword,
+      Number,
+      None, // mouseover not allowed
+      Error //Cursor hovers above error line/item;
     };
 
     struct SyntaxIssue {
@@ -168,16 +122,17 @@ public:
     using SyntaxIssueList = QVector<PSyntaxIssue>;
     using PSyntaxIssueList = std::shared_ptr<SyntaxIssueList>;
 
-    explicit Editor(QWidget* parent);
+    explicit Editor(QWidget *parent);
 
-    explicit Editor(QWidget* parent, const QString& filename, const QByteArray& encoding,
-                    FileType fileType, const QString& contextFile, Project* pProject, bool isNew,
-                    QTabWidget* parentPageControl);
+    explicit Editor(QWidget *parent, const QString& filename,
+                    const QByteArray& encoding,
+                    FileType fileType,
+                    const QString& contextFile,
+                    Project* pProject, bool isNew,QTabWidget* parentPageControl);
 
     ~Editor();
 
-    // tell the compiler to prohibit copy/moving editor objects ( we should only use pointers to the
-    // editor object)
+    //tell the compiler to prohibit copy/moving editor objects ( we should only use pointers to the editor object)
     Editor(const Editor&) = delete;
     Editor(const Editor&&) = delete;
     Editor& operator=(const Editor&) = delete;
@@ -194,15 +149,15 @@ public:
 
     void loadFile(QString filename = "");
     void saveFile(QString filename);
-    bool save(bool force = false, bool reparse = true);
-    bool saveAs(const QString& name = "", bool fromProject = false);
+    bool save(bool force=false, bool reparse=true);
+    bool saveAs(const QString& name="", bool fromProject = false);
     void setFilename(const QString& newName);
-    void activate(bool focus = true);
+    void activate(bool focus=true);
 
     QTabWidget* pageControl() noexcept;
     void setPageControl(QTabWidget* newPageControl);
 
-    void updateCaption(const QString& newCaption = QString());
+    void updateCaption(const QString& newCaption=QString());
     void applySettings();
     void applyColorScheme(const QString& schemeName);
     void setAutoIndent(bool indent);
@@ -212,11 +167,10 @@ public:
     void cutToClipboard() override;
     void copyAsHTML();
 
-    void setCaretPosition(int line, int aChar);
-    void setCaretPositionAndActivate(int line, int aChar);
+    void setCaretPosition(int line,int aChar);
+    void setCaretPositionAndActivate(int line,int aChar);
 
-    void addSyntaxIssues(int line, int startChar, int endChar, CompileIssueType errorType,
-                         const QString& hint);
+    void addSyntaxIssues(int line, int startChar, int endChar, CompileIssueType errorType, const QString& hint);
     void clearSyntaxIssues();
     void gotoNextSyntaxIssue();
     void gotoPrevSyntaxIssue();
@@ -235,12 +189,12 @@ public:
     void clearBookmarks();
     void removeBreakpointFocus();
     void modifyBreakpointProperty(int line);
-    void setActiveBreakpointFocus(int Line, bool setFocus = true);
+    void setActiveBreakpointFocus(int Line, bool setFocus=true);
     QString getPreviousWordAtPositionForSuggestion(const QSynedit::BufferCoord& p,
-                                                   QSynedit::TokenType& tokenType);
+                                                   QSynedit::TokenType &tokenType);
     QString getPreviousWordAtPositionForCompleteFunctionDefinition(const QSynedit::BufferCoord& p);
-    void reformat(bool doReparse = true);
-    void replaceContent(const QString& newContent, bool doReparse = true);
+    void reformat(bool doReparse=true);
+    void replaceContent(const QString &newContent, bool doReparse=true);
     void checkSyntaxInBack();
     void gotoDeclaration(const QSynedit::BufferCoord& pos);
     void gotoDefinition(const QSynedit::BufferCoord& pos);
@@ -266,90 +220,41 @@ public:
     void gotoBlockEnd();
     void showCodeCompletion();
 
-    QStringList getOwnerExpressionAndMemberAtPositionForCompletion(const QSynedit::BufferCoord& pos,
-                                                                   QString& memberOperator,
-                                                                   QStringList& memberExpression);
-    QString getWordForCompletionSearch(const QSynedit::BufferCoord& pos, bool permitTilde);
-    QStringList getExpressionAtPosition(const QSynedit::BufferCoord& pos);
+    QStringList getOwnerExpressionAndMemberAtPositionForCompletion(
+            const QSynedit::BufferCoord& pos,
+            QString& memberOperator,
+            QStringList& memberExpression);
+    QString getWordForCompletionSearch(const QSynedit::BufferCoord& pos,bool permitTilde);
+    QStringList getExpressionAtPosition(
+            const QSynedit::BufferCoord& pos);
     void resetBookmarks();
 
-    const PCppParser& parser() const;
+    const PCppParser &parser() const;
 
     void tab() override;
 
     static PCppParser sharedParser(ParserLanguage language);
 
-    void pageUp()
-    {
-        processCommand(QSynedit::EditCommand::PageUp);
-    }
-    void pageDown()
-    {
-        processCommand(QSynedit::EditCommand::PageDown);
-    }
-    void gotoLineStart()
-    {
-        processCommand(QSynedit::EditCommand::LineStart);
-    }
-    void gotoLineEnd()
-    {
-        processCommand(QSynedit::EditCommand::LineEnd);
-    }
-    void gotoPageStart()
-    {
-        processCommand(QSynedit::EditCommand::PageTop);
-    }
-    void gotoPageEnd()
-    {
-        processCommand(QSynedit::EditCommand::PageBottom);
-    }
-    void gotoFileStart()
-    {
-        processCommand(QSynedit::EditCommand::FileStart);
-    }
-    void gotoFileEnd()
-    {
-        processCommand(QSynedit::EditCommand::FileEnd);
-    }
+    void pageUp() { processCommand(QSynedit::EditCommand::PageUp); }
+    void pageDown() { processCommand(QSynedit::EditCommand::PageDown); }
+    void gotoLineStart() { processCommand(QSynedit::EditCommand::LineStart); }
+    void gotoLineEnd() { processCommand(QSynedit::EditCommand::LineEnd); }
+    void gotoPageStart() { processCommand(QSynedit::EditCommand::PageTop); }
+    void gotoPageEnd() { processCommand(QSynedit::EditCommand::PageBottom); }
+    void gotoFileStart() { processCommand(QSynedit::EditCommand::FileStart); }
+    void gotoFileEnd() { processCommand(QSynedit::EditCommand::FileEnd); }
     void toggleReadonly();
 
-    void pageUpAndSelect()
-    {
-        processCommand(QSynedit::EditCommand::SelPageUp);
-    }
-    void pageDownAndSelect()
-    {
-        processCommand(QSynedit::EditCommand::SelPageDown);
-    }
-    void selectToLineStart()
-    {
-        processCommand(QSynedit::EditCommand::SelLineStart);
-    }
-    void selectToLineEnd()
-    {
-        processCommand(QSynedit::EditCommand::SelLineEnd);
-    }
-    void selectToPageStart()
-    {
-        processCommand(QSynedit::EditCommand::SelPageTop);
-    }
-    void selectToPageEnd()
-    {
-        processCommand(QSynedit::EditCommand::SelPageBottom);
-    }
-    void selectToFileStart()
-    {
-        processCommand(QSynedit::EditCommand::SelFileStart);
-    }
-    void selectToFileEnd()
-    {
-        processCommand(QSynedit::EditCommand::SelFileEnd);
-    }
+    void pageUpAndSelect() { processCommand(QSynedit::EditCommand::SelPageUp); }
+    void pageDownAndSelect() { processCommand(QSynedit::EditCommand::SelPageDown); }
+    void selectToLineStart() { processCommand(QSynedit::EditCommand::SelLineStart); }
+    void selectToLineEnd() { processCommand(QSynedit::EditCommand::SelLineEnd); }
+    void selectToPageStart() { processCommand(QSynedit::EditCommand::SelPageTop); }
+    void selectToPageEnd() { processCommand(QSynedit::EditCommand::SelPageBottom); }
+    void selectToFileStart() { processCommand(QSynedit::EditCommand::SelFileStart); }
+    void selectToFileEnd() { processCommand(QSynedit::EditCommand::SelFileEnd); }
 
-    bool inTab()
-    {
-        return mParentPageControl != nullptr;
-    }
+    bool inTab() { return mParentPageControl!=nullptr; }
 
 signals:
     void renamed(const QString& oldName, const QString& newName, bool firstSave);
@@ -358,8 +263,8 @@ private slots:
     void onStatusChanged(QSynedit::StatusChanges changes);
     void onGutterClicked(Qt::MouseButton button, int x, int y, int line);
     void onTipEvalValueReady(const QString& value);
-    void onLinesDeleted(int first, int count);
-    void onLinesInserted(int first, int count);
+    void onLinesDeleted(int first,int count);
+    void onLinesInserted(int first,int count);
     void onFunctionTipsTimer();
     void onAutoBackupTimer();
     void onTooltipTimer();
@@ -393,7 +298,7 @@ private:
     QuoteStatus getQuoteStatus();
 
     void showCompletion(const QString& preWord, bool autoComplete, CodeCompletionType type);
-    void showHeaderCompletion(bool autoComplete, bool forceShow = false);
+    void showHeaderCompletion(bool autoComplete, bool forceShow=false);
 
     void initAutoBackup();
     void saveAutoBackup();
@@ -401,27 +306,28 @@ private:
 
     bool testInFunc(const QSynedit::BufferCoord& pos);
 
-    void completionInsert(bool appendFunc = false);
+    void completionInsert(bool appendFunc=false);
 
     void headerCompletionInsert();
 
     bool onCompletionKeyPressed(QKeyEvent* event);
     bool onHeaderCompletionKeyPressed(QKeyEvent* event);
-    bool onCompletionInputMethod(QInputMethodEvent* event);
+    bool onCompletionInputMethod(QInputMethodEvent *event);
 
     TipType getTipType(QPoint point, QSynedit::BufferCoord& pos);
     void cancelHint();
-    QString getFileHint(const QString& s, bool fromNext);
-    QString getParserHint(const QStringList& expression, const QString& s, int line);
-    void showDebugHint(const QString& s, int line);
+    QString getHeaderFileHint(const QString& s, bool fromNext);
+    QString getParserHint(const QStringList& expression, const QSynedit::BufferCoord& p);
+    void showDebugHint(const QString& s,int line);
     QString getErrorHint(const PSyntaxIssue& issue);
-    QString getHintForFunction(const PStatement& statement, const QString& filename, int line);
+    QString getHintForFunction(const PStatement& statement,
+                               const QString& filename, int line);
 
     void updateFunctionTip(bool showTip);
     void clearUserCodeInTabStops();
     void popUserCodeInTabStops();
-    void onExportedFormatToken(QSynedit::PSyntaxer syntaxer, int Line, int column,
-                               const QString& token, QSynedit::PTokenAttribute& attr);
+    void onExportedFormatToken(QSynedit::PSyntaxer syntaxer, int Line, int column, const QString& token,
+        QSynedit::PTokenAttribute &attr);
     void onScrollBarValueChanged();
     void updateHoverLink(int line);
     void cancelHoverLink();
@@ -432,17 +338,19 @@ private:
     Editor* openFileInContext(const QString& filename);
     bool needReparse();
 
+    PStatement constructorToClass(PStatement constuctorStatement, const QSynedit::BufferCoord& p);
+
 private:
     bool mInited;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEncodingOption; // the encoding type set by the user
-    QByteArray mFileEncoding;   // the real encoding of the file (auto detected)
+    QByteArray mFileEncoding; // the real encoding of the file (auto detected)
     QString mFilename;
     QTabWidget* mParentPageControl;
     Project* mProject;
     bool mIsNew;
-    QMap<int, PSyntaxIssueList> mSyntaxIssues;
+    QMap<int,PSyntaxIssueList> mSyntaxIssues;
     QColor mSyntaxErrorColor;
     QColor mSyntaxWarningColor;
     QColor mActiveBreakpointForegroundColor;
@@ -458,8 +366,8 @@ private:
     QSet<int> mBookmarkLines;
     int mActiveBreakpointLine;
     PCppParser mParser;
-    CodeCompletionPopup* mCompletionPopup;
-    HeaderCompletionPopup* mHeaderCompletionPopup;
+    CodeCompletionPopup *mCompletionPopup;
+    HeaderCompletionPopup *mHeaderCompletionPopup;
     bool mUseCppSyntax;
     QString mCurrentWord;
     QString mCurrentDebugTipWord;
@@ -480,7 +388,7 @@ private:
     QList<PTabStop> mUserCodeInTabStops;
     QSynedit::BufferCoord mHighlightCharPos1;
     QSynedit::BufferCoord mHighlightCharPos2;
-    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>> mStatementColors;
+    std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > mStatementColors;
     QTimer mFunctionTipTimer;
     QTimer mAutoBackupTimer;
     QTimer mTooltipTimer;
@@ -490,23 +398,21 @@ private:
     FileType mFileType;
     QString mContextFile;
 
-    QMap<QString, StatementKind> mIdentCache;
+    QMap<QString,StatementKind> mIdentCache;
     qint64 mLastFocusOutTime;
 
-    static QHash<ParserLanguage, std::weak_ptr<CppParser>> mSharedParsers;
+    static QHash<ParserLanguage,std::weak_ptr<CppParser>> mSharedParsers;
 
     // SynEdit interface
 protected:
-    void onGutterPaint(QPainter& painter, int aLine, int X, int Y) override;
-    void onGetEditingAreas(int Line, QSynedit::EditingAreaList& areaList) override;
-    bool onGetSpecialLineColors(int Line, QColor& foreground, QColor& backgroundColor) override;
-    void onPreparePaintHighlightToken(int line, int aChar, const QString& token,
-                                      QSynedit::PTokenAttribute attr, QSynedit::FontStyles& style,
-                                      QColor& foreground, QColor& background) override;
+    void onGutterPaint(QPainter &painter, int aLine, int X, int Y) override;
+    void onGetEditingAreas(int Line, QSynedit::EditingAreaList &areaList) override;
+    bool onGetSpecialLineColors(int Line, QColor &foreground, QColor &backgroundColor) override;
+    void onPreparePaintHighlightToken(int line, int aChar, const QString &token, QSynedit::PTokenAttribute attr, QSynedit::FontStyles &style, QColor &foreground, QColor &background) override;
 
     // QObject interface
 public:
-    bool event(QEvent* event) override;
+    bool event(QEvent *event) override;
 
     // QWidget interface
     void setProject(Project* pProject);
@@ -514,14 +420,11 @@ public:
     bool useCppSyntax() const;
     void setUseCppSyntax(bool newUseCppSyntax);
 
-    const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>>&
-    statementColors() const;
-    void setStatementColors(
-        const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem>>>&
-            newStatementColors);
+    const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > &statementColors() const;
+    void setStatementColors(const std::shared_ptr<QHash<StatementKind, std::shared_ptr<ColorSchemeItem> > > &newStatementColors);
 
-    const QDateTime& hideTime() const;
-    void setHideTime(const QDateTime& newHideTime);
+    const QDateTime &hideTime() const;
+    void setHideTime(const QDateTime &newHideTime);
 
     bool canAutoSave() const;
     void setCanAutoSave(bool newCanAutoSave);
@@ -530,28 +433,31 @@ public:
 
     FileType fileType() const;
     void setFileType(FileType newFileType);
-    const QString& contextFile() const;
-    void setContextFile(const QString& newContextFile);
+    const QString &contextFile() const;
+    void setContextFile(const QString &newContextFile);
 
 protected:
     // QWidget interface
-    void wheelEvent(QWheelEvent* event) override;
-    void focusInEvent(QFocusEvent* event) override;
-    void focusOutEvent(QFocusEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
-    void mousePressEvent(QMouseEvent* event) override;
-    void inputMethodEvent(QInputMethodEvent*) override;
-    void closeEvent(QCloseEvent* event) override;
-    void showEvent(QShowEvent* event) override;
-    void hideEvent(QHideEvent* event) override;
-    void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void inputMethodEvent(QInputMethodEvent *) override;
+    void closeEvent(QCloseEvent *event) override;
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 };
 
-QString getWordAtPosition(QSynedit::QSynEdit* editor, const QSynedit::BufferCoord& p,
-                          QSynedit::BufferCoord& pWordBegin, QSynedit::BufferCoord& pWordEnd,
+QString getWordAtPosition(QSynedit::QSynEdit* editor,
+                          const QSynedit::BufferCoord& p,
+                          QSynedit::BufferCoord& pWordBegin,
+                          QSynedit::BufferCoord& pWordEnd,
                           Editor::WordPurpose purpose);
+
 
 #endif // EDITOR_H

@@ -13,12 +13,11 @@ class LanguageCFormatWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    explicit LanguageCFormatWidget(const QString& name, const QString& group,
-                                   QWidget* parent = nullptr);
+    explicit LanguageCFormatWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~LanguageCFormatWidget();
 
 private:
-    Ui::LanguageCFormatWidget* ui;
+    Ui::LanguageCFormatWidget *ui;
 
     // SettingsWidget interface
 protected:

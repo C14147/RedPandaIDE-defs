@@ -29,18 +29,17 @@ class EnvironmentAppearanceWidget : public SettingsWidget
     Q_OBJECT
 
 public:
-    explicit EnvironmentAppearanceWidget(const QString& name, const QString& group,
-                                         QWidget* parent = nullptr);
+    explicit EnvironmentAppearanceWidget(const QString& name, const QString& group, QWidget *parent = nullptr);
     ~EnvironmentAppearanceWidget();
 
 private:
-    Ui::EnvironmentAppearanceWidget* ui;
+    Ui::EnvironmentAppearanceWidget *ui;
 
     // SettingsWidget interface
 protected:
     void doLoad() override;
     void doSave() override;
-    void updateIcons(const QSize& size) override;
+    void updateIcons(const QSize &size) override;
 
     // SettingsWidget interface
 public:
@@ -53,6 +52,7 @@ private slots:
 
 private:
     void refreshThemeList(const QString& currentThemeName);
+
 };
 
 #endif // ENVIRONMENTAPPEARANCEWIDGET_H
