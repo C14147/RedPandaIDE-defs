@@ -58,7 +58,6 @@ class CppPreprocessor
         RawString,
         Other
     };
-
 public:
 
     explicit CppPreprocessor();
@@ -145,7 +144,6 @@ private:
 
     static QString expandFunction(PDefine define,const QString &args);
     void preprocessBuffer();
-    void skipToEndOfPreprocessor();
     void skipToPreprocessor();
     QString getNextPreprocessor();
     void handleBranch(const QString& line);
@@ -203,7 +201,9 @@ private:
 
     void parseArgs(PDefine define);
 
-    QStringList removeComments(const QStringList& text);
+
+    void removeLastBackSlash(QStringList& text);
+    void removeComments(QStringList& text);
     /*
      * '_','a'..'z','A'..'Z','0'..'9'
      */

@@ -1505,12 +1505,10 @@ public:
         bool isOutputExecutable(Settings::CompilerSet::CompilationStage stage);
 
 #ifdef Q_OS_WINDOWS
-        bool isDebugInfoUsingUTF8();
-        bool forceUTF8() const;
-        bool isCompilerInfoUsingUTF8();
+        bool isDebuggerUsingUTF8() const;
+        bool isCompilerUsingUTF8() const;
 #else
         constexpr bool isDebugInfoUsingUTF8() const { return true; }
-        constexpr bool forceUTF8() const { return true; }
         constexpr bool isCompilerInfoUsingUTF8() const { return true; }
 #endif
 
@@ -1589,8 +1587,10 @@ public:
         bool mGccSupportNLSInitialized;
 #ifdef Q_OS_WINDOWS
         // GCC ACP detection cache
-        bool mGccIsUtf8;
-        bool mGccIsUtf8Initialized;
+        mutable bool mGccIsUtf8;
+        mutable bool mGccIsUtf8Initialized;
+        mutable bool mGDBIsUtf8;
+        mutable bool mGDBIsUtf8Initialized;
         bool mGccSupportConvertingCharset;
         bool mGccSupportConvertingCharsetInitialized;
 #endif
