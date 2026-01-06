@@ -36,17 +36,17 @@ class QTextCodec;
 class QByteArray;
 class QTextStream;
 
-#define ENCODING_AUTO_DETECT      "AUTO"
-#define ENCODING_UTF8             "UTF-8"
-#define ENCODING_UTF16            "UTF-16"
-#define ENCODING_UTF32            "UTF-32"
-#define ENCODING_UTF8_BOM         "UTF-8 BOM"
-#define ENCODING_UTF16_BOM        "UTF-16 BOM"
-#define ENCODING_UTF32_BOM        "UTF-32 BOM"
+#define ENCODING_AUTO_DETECT "AUTO"
+#define ENCODING_UTF8   "UTF-8"
+#define ENCODING_UTF16   "UTF-16"
+#define ENCODING_UTF32   "UTF-32"
+#define ENCODING_UTF8_BOM "UTF-8 BOM"
+#define ENCODING_UTF16_BOM "UTF-16 BOM"
+#define ENCODING_UTF32_BOM "UTF-32 BOM"
 #define ENCODING_SYSTEM_DEFAULT   "SYSTEM"
-#define ENCODING_OEM_DEFAULT      "OEM"
-#define ENCODING_ASCII            "ASCII"
-#define ENCODING_PROJECT          "PROJECT"
+#define ENCODING_OEM_DEFAULT   "OEM"
+#define ENCODING_ASCII  "ASCII"
+#define ENCODING_PROJECT    "PROJECT"
 
 enum class NewlineType {
     Windows,
@@ -61,11 +61,6 @@ public:
 
 protected:
     QString mReason;
-};
-
-class IndexOutOfRange:public BaseError {
-public:
-    explicit IndexOutOfRange(int Index);
 };
 
 class FileError: public BaseError {
