@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Roy Qu (royqh1979@gmail.com)
+ * Copyright (C) 2020-2026 Roy Qu (royqh1979@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef UTILS_FONT_H
-#define UTILS_FONT_H
+#ifndef ASTYLE_REFORMATTER_H
+#define ASTYLE_REFORMATTER_H
+#include "basereformatter.h"
+#include "../utils/types.h"
 
-#include <QString>
-#include <QStringList>
-#include <QLocale>
-
-enum class UnicodeSupportLevel {
-    BmpOnly = 0,
-    FullCodePoint = 1,
-    Contextual = 2,
-    Grapheme = 3,
-    Bidirectional = 4,
+class AStyleReformatter : public BaseReformatter {
+    Q_OBJECT
+public:
+    AStyleReformatter(const QString& astylePath, const QStringList& args, LoggerFunc newLoggerFunc, QObject* parent = nullptr);
+    QString refomat(const QString& content, QString &errorMessage, bool &isOk) override;
+private:
+    QString mAstylePath;
+    QStringList mArgs;
+    LoggerFunc mLoggerFunc;
 };
 
-QString defaultUiFont();
-QString defaultMonoFont();
-QString defaultEmojiFont();
-bool isCjk(const QString &locale = QLocale::system().name());
-QStringList defaultCjkEditorFonts(const QString &locale);
-QStringList defaultFallbackEditorFonts();
-QStringList defaultEditorFonts();
-
-#endif // FONT_H
+#endif

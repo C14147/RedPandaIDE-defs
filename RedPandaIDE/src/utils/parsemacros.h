@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Roy Qu (royqh1979@gmail.com)
+ * Copyright (C) 2020-2026 Roy Qu (royqh1979@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef UTILS_FONT_H
-#define UTILS_FONT_H
-
+#ifndef UTILS_PARSEMACROS_H
+#define UTILS_PARSEMACROS_H
 #include <QString>
-#include <QStringList>
-#include <QLocale>
+#include <QMap>
+#include <functional>
 
-enum class UnicodeSupportLevel {
-    BmpOnly = 0,
-    FullCodePoint = 1,
-    Contextual = 2,
-    Grapheme = 3,
-    Bidirectional = 4,
-};
-
-QString defaultUiFont();
-QString defaultMonoFont();
-QString defaultEmojiFont();
-bool isCjk(const QString &locale = QLocale::system().name());
-QStringList defaultCjkEditorFonts(const QString &locale);
-QStringList defaultFallbackEditorFonts();
-QStringList defaultEditorFonts();
+using GetMacroVarsFunc = std::function<QMap<QString, QString>()>;
+QString parseMacros(const QString& s, GetMacroVarsFunc getMacroVarsFunc);
+QString parseMacros(const QString& s, const QMap<QString, QString>& variables);
 
 #endif // FONT_H
