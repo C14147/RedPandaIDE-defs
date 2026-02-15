@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Roy Qu (royqh1979@gmail.com)
+ * Copyright (C) 2020-2026 Roy Qu (royqh1979@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,31 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef EDITORSYNTAXCHECKWIDGET_H
-#define EDITORSYNTAXCHECKWIDGET_H
+#ifndef UTILS_TERMINAL_H
+#define UTILS_TERMINAL_H
+#include <QString>
+#include <QStringList>
+#include "file.h"
 
-#include <QWidget>
-#include "settingswidget.h"
+class DirSettings;
+std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner> wrapCommandForTerminalEmulator(const QString &terminal, const QStringList &argsPattern, const QStringList &payloadArgsWithArgv0, DirSettings *dirSettings);
 
-namespace Ui {
-class EditorSyntaxCheckWidget;
-}
+std::tuple<QString, QStringList, PNonExclusiveTemporaryFileOwner> wrapCommandForTerminalEmulator(const QString &terminal, const QString &argsPattern, const QStringList &payloadArgsWithArgv0, DirSettings *dirSettings);
 
-class EditorSyntaxCheckWidget : public SettingsWidget
-{
-    Q_OBJECT
-
-public:
-    explicit EditorSyntaxCheckWidget(const QString& name, const QString& group,IconsManager *iconsManager,  QWidget *parent = nullptr);
-    ~EditorSyntaxCheckWidget();
-
-private:
-    Ui::EditorSyntaxCheckWidget *ui;
-
-    // SettingsWidget interface
-protected:
-    void doLoad();
-    void doSave();
-};
-
-#endif // EDITORSYNTAXCHECKWIDGET_H
+#endif // UTILS_TERMINAL_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Roy Qu (royqh1979@gmail.com)
+ * Copyright (C) 2020-2026 Roy Qu (royqh1979@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,31 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef EDITORSYNTAXCHECKWIDGET_H
-#define EDITORSYNTAXCHECKWIDGET_H
+#ifndef UTILS_UI_H
+#define UTILS_UI_H
 
-#include <QWidget>
-#include "settingswidget.h"
+#include <QColor>
 
-namespace Ui {
-class EditorSyntaxCheckWidget;
-}
+bool haveGoodContrast(const QColor& c1, const QColor &c2);
 
-class EditorSyntaxCheckWidget : public SettingsWidget
-{
-    Q_OBJECT
+QColor alphaBlend(const QColor &lower, const QColor &upper);
 
-public:
-    explicit EditorSyntaxCheckWidget(const QString& name, const QString& group,IconsManager *iconsManager,  QWidget *parent = nullptr);
-    ~EditorSyntaxCheckWidget();
-
-private:
-    Ui::EditorSyntaxCheckWidget *ui;
-
-    // SettingsWidget interface
-protected:
-    void doLoad();
-    void doSave();
-};
-
-#endif // EDITORSYNTAXCHECKWIDGET_H
+#endif // UTILS_UI_H
